@@ -11,7 +11,7 @@
         android:id="@+id/btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="显示文字"/>
+        android:text="随机生成"/>
 
     <TextView
         android:id="@+id/tv"
