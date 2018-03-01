@@ -28,12 +28,8 @@ public class Phone {
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         super.afterHookedMethod(param);
                         param.setResult(SharedPref.getintXValue("getType"));
-
+                        XposedBridge.log("NetworkInfo");
                     }
-
-                    ;
-
-
                 });
 
 
@@ -42,7 +38,6 @@ public class Phone {
     // ------- MAC 蓝牙-----------------------------------------------------------
     public void Bluetooth(XC_LoadPackage.LoadPackageParam loadPkgParam) {
         try {
-
             // 双层 MAC
             XposedHelpers.findAndHookMethod(
                     "android.bluetooth.BluetoothAdapter",
@@ -52,9 +47,9 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             super.afterHookedMethod(param);
                             param.setResult(SharedPref.getXValue("LYMAC"));
+                            XposedBridge.log("BluetoothAdapter");
                         }
 
                     });
@@ -67,9 +62,9 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             // super.afterHookedMethod(param);
                             param.setResult(SharedPref.getXValue("LYMAC"));
+                            XposedBridge.log("BluetoothDevice");
                         }
 
                     });
@@ -91,9 +86,9 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             super.afterHookedMethod(param);
                             param.setResult(SharedPref.getXValue("WifiMAC"));
+                            XposedBridge.log("WifiInfo_getMacAddress");
                         }
 
                     });
@@ -106,11 +101,10 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             super.afterHookedMethod(param);
                             param.setResult(SharedPref.getintXValue("getIP"));
                             // param.setResult(tryParseInt(SharedPref.getXValue("getIP")));
-
+                            XposedBridge.log("WifiInfo_getIpAddress");
                         }
 
                     });
@@ -121,9 +115,9 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             super.afterHookedMethod(param);
                             param.setResult(SharedPref.getXValue("WifiName"));
+                            XposedBridge.log("WifiInfo_getSSID");
                         }
 
                     });
@@ -195,7 +189,6 @@ public class Phone {
             @Override
             protected void afterHookedMethod(MethodHookParam param)
                     throws Throwable {
-                // TODO Auto-generated method stub
                 super.afterHookedMethod(param);
                 //      网络类型
                 param.setResult(SharedPref.getintXValue("networkType"));
@@ -211,7 +204,6 @@ public class Phone {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param)
                             throws Throwable {
-                        // TODO Auto-generated method stub
                         super.afterHookedMethod(param);
 
                         param.setResult(SharedPref.getintXValue("phonetype"));
@@ -224,7 +216,6 @@ public class Phone {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param)
                             throws Throwable {
-                        // TODO Auto-generated method stub
                         super.afterHookedMethod(param);
 
                         param.setResult(SharedPref.getintXValue("SimState"));
@@ -235,7 +226,7 @@ public class Phone {
     }
 
     private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam,
-                               String funcName, final String value) {
+                               final String funcName, final String value) {
         try {
             XposedHelpers.findAndHookMethod(hookClass,
                     loadPkgParam.classLoader, funcName, new XC_MethodHook() {
@@ -243,14 +234,12 @@ public class Phone {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param)
                                 throws Throwable {
-                            // TODO Auto-generated method stub
                             super.afterHookedMethod(param);
                             param.setResult(value);
+                            XposedBridge.log(funcName);
                         }
 
                     });
-
-
         } catch (Exception e) {
 
         }

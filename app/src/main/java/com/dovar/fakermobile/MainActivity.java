@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDatas() {
-        String text="";
+        String text = "";
         int index = new Random().nextInt(SimulateDataTemp.imeiStore.size());
         HashMap<String, String> data = SimulateDataTemp.imeiStore.get(index);
         SharedPref mySP = new SharedPref(getApplicationContext());
@@ -42,16 +42,20 @@ public class MainActivity extends AppCompatActivity {
         String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
             String[] size = display.split("\\*");
-            mySP.setSharedPref("width", size[0]);
-            if (size.length > 1) {
-                mySP.setSharedPref("height", size[1]);
+            try {
+                mySP.setintSharedPref("width", Integer.parseInt(size[0]));
+                if (size.length > 1) {
+                    mySP.setintSharedPref("height", Integer.parseInt(size[1]));
+                }
+            } catch (Exception me) {
+                me.printStackTrace();
             }
         }
 
-        text+=data.get("brand");
-        text+=data.get("model");
-        text+=data.get("imei");
-        text+=data.get("display");
+        text += data.get("brand");
+        text += data.get("model");
+        text += data.get("imei");
+        text += data.get("display");
 
         mySP.setSharedPref("API", SimulateDataTemp.getSdkLevel()); //系统的API级别 SDK
 
@@ -118,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
         mySP.setintSharedPref("networkType", 6);//      网络类型
         mySP.setintSharedPref("phonetype", 5); // 手机类型
         mySP.setintSharedPref("SimState", 10); // 手机卡状态
-        mySP.setintSharedPref("width", 480); // 宽
-        mySP.setintSharedPref("height", 720); // 高
+        mySP.setintSharedPref("width", 720); // 宽
+        mySP.setintSharedPref("height", 1920); // 高
         mySP.setintSharedPref("getIP", -123456789); // 内网ip(wifl可用)
     /*
      屏幕相关

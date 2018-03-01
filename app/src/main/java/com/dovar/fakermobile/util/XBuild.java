@@ -3,7 +3,6 @@ package com.dovar.fakermobile.util;
 import android.content.ContentResolver;
 import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
 
 import java.lang.reflect.Member;
 
@@ -99,7 +98,7 @@ public class XBuild {
                 super.beforeHookedMethod(param);
                 String methodName = param.method.getName();
                 if (methodName.startsWith("get")) {
-                    Log.v("getDeviceInfo", "hook systemProperties ------>");
+                    XposedBridge.log("getDeviceInfo");
                     try {
                         XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
                         XposedHelpers.setStaticObjectField(Build.class, "BRAND", SharedPref.getXValue("brand"));
@@ -138,15 +137,13 @@ public class XBuild {
             XposedHelpers.findAndHookMethod("android.provider.Settings.Secure", loadPkgParam.classLoader, "getString", ContentResolver.class, String.class, new XC_MethodHook() {
 
                 @Override
-                protected void afterHookedMethod(MethodHookParam param)
-                        throws Throwable {
-
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
                         param.setResult(SharedPref.getXValue("AndroidID"));
                     }
+                    XposedBridge.log("android.provider.Settings.Secure");
                 }
             });
-
         } catch (Exception ex) {
             XposedBridge.log(" Android ID 错误: " + ex.getMessage());
         }
@@ -158,8 +155,7 @@ public class XBuild {
                     XposedBridge.hookMethod(mem, new XC_MethodHook() {
 
                         @Override
-                        protected void beforeHookedMethod(MethodHookParam param)
-                                throws Throwable {
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             super.beforeHookedMethod(param);
                             // 用户的KEY
                             if (param.args.length > 0 && param.args[0] != null && param.args[0].equals("ro.build.description")) {
@@ -169,7 +165,6 @@ public class XBuild {
                     });
                 }
             }
-
         } catch (ClassNotFoundException e) {
             XposedBridge.log(" DESCRIPTION 错误: " + e.getMessage());
         }

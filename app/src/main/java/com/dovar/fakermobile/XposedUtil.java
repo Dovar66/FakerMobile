@@ -6,7 +6,6 @@ import com.dovar.fakermobile.util.Resolution;
 import com.dovar.fakermobile.util.XBuild;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
@@ -16,28 +15,30 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class XposedUtil implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam mLoadPackageParam) throws Throwable {
-        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
+//        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
-        new Hook().HookTest(mLoadPackageParam);//动态生效 不用重启
-        new XBuild(mLoadPackageParam);
-        new Phone(mLoadPackageParam);
-        new Resolution().Display(mLoadPackageParam);  //屏幕
+        if (mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
+            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
+            new XBuild(mLoadPackageParam);
+            new Phone(mLoadPackageParam);
+            new Resolution().Display(mLoadPackageParam);  //屏幕
+        }
 
 
-//        if (mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
-//            XposedHelpers.findAndHookMethod(TextView.class, "setText", CharSequence.class, new XC_MethodHook() {
-//                @Override
-//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                    super.beforeHookedMethod(param);
-//                    param.args[0] = "被修改的";
-//                }
+//        eg:
+//        new XC_MethodHook() {
+//            @Override
+//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                super.beforeHookedMethod(param);//hook方法执行之前修改传入参数
+//                param.args[0] =;
+//            }
 //
-//                @Override
-//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                    super.afterHookedMethod(param);
-//                }
-//            });
-//        }
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);//hook方法执行之后修改返回结果
+//                param.setResult();
+//            }
+//        };
 
 
 /*        addHook(mLoadPackageParam.packageName, WifiInfo.class.getName(), mLoadPackageParam.classLoader, "getMacAddress", new Object[0]);
