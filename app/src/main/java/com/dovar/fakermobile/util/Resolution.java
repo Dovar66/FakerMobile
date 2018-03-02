@@ -1,5 +1,6 @@
 package com.dovar.fakermobile.util;
 
+import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
@@ -35,6 +36,10 @@ public class Resolution {
         }
 
         try {
+            /**
+             *  Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);method.invoke(display, dm);dpi = dm.heightPixels;
+             *  针对这种方式的获取分辨率
+             */
             XposedHelpers.findAndHookMethod("android.view.Display", loadPkgParam.classLoader, "getRealMetrics", DisplayMetrics.class, new XC_MethodHook(XCallback.PRIORITY_LOWEST) {
 
                 @Override
@@ -43,6 +48,8 @@ public class Resolution {
                     final int dpi = SharedPref.getintXValue("DPI");
                     DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                     metrics.densityDpi = dpi;
+                    metrics.widthPixels = SharedPref.getintXValue("width");
+                    metrics.heightPixels = SharedPref.getintXValue("height");
                     XposedBridge.log("getRealMetrics_dpi");
                 }
 
@@ -128,7 +135,10 @@ public class Resolution {
 
         }
 
-        //  已废弃的修改屏幕信息
+        /**
+         * Display.getWidth()  Display.getHeight()
+         * 针对这种方式的获取分辨率
+         */
         XposedHelpers.findAndHookMethod("android.view.Display", loadPkgParam.classLoader, "getWidth", new XC_MethodHook() {
 
             @Override
@@ -152,20 +162,51 @@ public class Resolution {
         });
 
 
-        // 宽
-        XposedHelpers.findAndHookMethod(Display.class, "getMetrics", DisplayMetrics.class, new XC_MethodHook(XCallback.PRIORITY_LOWEST) {
+        /**
+         *  Display display = wm.getDefaultDisplay();Point size = new Point();display.getSize(size);
+         *  针对这种方式的获取分辨率
+         */
+        XposedHelpers.findAndHookMethod("android.view.Display", loadPkgParam.classLoader, "getSize", Point.class, new XC_MethodHook() {
 
+            @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+
+                Point mPoint = (Point) param.args[0];
+                mPoint.y = SharedPref.getintXValue("height");
+                mPoint.x = SharedPref.getintXValue("width");
+                XposedBridge.log("getSize");
+            }
+        });
+
+        // 宽
+        XposedHelpers.findAndHookMethod("android.view.Display", loadPkgParam.classLoader, "getMetrics", DisplayMetrics.class, new XC_MethodHook(XCallback.PRIORITY_LOWEST) {
+
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
                 final int zhenwidth = SharedPref.getintXValue("width");
                 DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                 metrics.widthPixels = zhenwidth;
                 XposedBridge.log("getMetrics_width");
+
+//                try {
+//                    Field mField=XposedHelpers.findField(Point.class, "x");
+//                    mField.setAccessible(true);
+//                    mField.set(new Point(),SharedPref.getintXValue("width"));
+//                    XposedHelpers.findField(Point.class, "x").setInt(new Point(), SharedPref.getintXValue("width"));//非静态变量只能修改指定对象的属性
+//                    XposedHelpers.findField(Point.class, "y").setInt(new Point(), SharedPref.getintXValue("height"));
+//                } catch (IllegalAccessException mE) {
+//                    mE.printStackTrace();
+//                }
             }
         });
         // 高
         XposedHelpers.findAndHookMethod(Display.class, "getMetrics", DisplayMetrics.class, new XC_MethodHook(XCallback.PRIORITY_LOWEST) {
 
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
                 final int zhenheight = SharedPref.getintXValue("height");
                 DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                 metrics.heightPixels = zhenheight;

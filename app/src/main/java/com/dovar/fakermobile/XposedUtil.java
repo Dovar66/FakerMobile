@@ -17,12 +17,12 @@ public class XposedUtil implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam mLoadPackageParam) throws Throwable {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
-        if (mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
+//        if (mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
             new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
             new XBuild(mLoadPackageParam);
             new Phone(mLoadPackageParam);
             new Resolution().Display(mLoadPackageParam);  //屏幕
-        }
+//        }
 
 
 //        eg:
