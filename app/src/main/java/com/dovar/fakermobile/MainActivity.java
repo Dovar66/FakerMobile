@@ -52,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        text += data.get("brand");
-        text += data.get("model");
-        text += data.get("imei");
-        text += data.get("display");
+        text += data.get("brand")+"\n";
+        text += data.get("model")+"\n";
+        text += data.get("imei")+"\n";
+        text += data.get("display")+"\n";
 
         mySP.setSharedPref("API", SimulateDataTemp.getSdkLevel()); //系统的API级别 SDK
 
