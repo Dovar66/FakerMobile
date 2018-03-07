@@ -28,9 +28,9 @@ public class Resolution {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
-                    final int dpi = SharedPref.getintXValue("DPI");
+//                    final int dpi = SharedPref.getintXValue("DPI");
                     DisplayMetrics metrics = (DisplayMetrics) param.args[0];
-                    metrics.densityDpi = dpi;
+//                    metrics.densityDpi = dpi;
                     metrics.widthPixels = SharedPref.getintXValue("width");
                     metrics.heightPixels = SharedPref.getintXValue("height");
                     XposedBridge.log("getRealMetrics_dpi");
@@ -55,11 +55,11 @@ public class Resolution {
                     DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                     metrics.widthPixels = SharedPref.getintXValue("width");
                     metrics.heightPixels = SharedPref.getintXValue("height");
-                    metrics.density = SharedPref.getfloatXValue("density");
-                    metrics.scaledDensity = SharedPref.getfloatXValue("scaledDensity");
-                    metrics.densityDpi = tryParseInt(SharedPref.getXValue("DPI"));
-                    metrics.xdpi = SharedPref.getfloatXValue("xdpi");
-                    metrics.ydpi = SharedPref.getfloatXValue("ydpi");
+//                    metrics.density = SharedPref.getfloatXValue("density");
+//                    metrics.scaledDensity = SharedPref.getfloatXValue("scaledDensity");
+//                    metrics.densityDpi = tryParseInt(SharedPref.getXValue("DPI"));
+//                    metrics.xdpi = SharedPref.getfloatXValue("xdpi");
+//                    metrics.ydpi = SharedPref.getfloatXValue("ydpi");
 
                     XposedBridge.log("getMetrics");
                 }
@@ -84,13 +84,6 @@ public class Resolution {
             }
         });
 
-
-//        new XC_MethodReplacement(){
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
-//                return null;
-//            }
-//        };
         XposedHelpers.findAndHookMethod("android.view.Display", loadPkgParam.classLoader, "getHeight", new XC_MethodHook() {
 
             @Override
