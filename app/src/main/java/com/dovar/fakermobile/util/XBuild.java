@@ -2,9 +2,6 @@ package com.dovar.fakermobile.util;
 
 import android.os.Build;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -98,9 +95,8 @@ public class XBuild {
                     try {
                         XposedHelpers.setStaticObjectField(Build.class, "BRAND", SharedPref.getXValue("brand"));
                         XposedHelpers.setStaticObjectField(Build.class, "MODEL", SharedPref.getXValue("model"));
-                        String api = randomSdkLevel();
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", api);
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", sdkLevel.get(api));
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", SharedPref.getXValue("API"));
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", SharedPref.getXValue("AndroidVer"));
 //                        XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
 //                        XposedHelpers.findField(Build.class, "CPU_ABI").set(null, SharedPref.getXValue("ABI"));
 //                        XposedHelpers.findField(Build.class, "CPU_ABI2").set(null, SharedPref.getXValue("ABI2"));
@@ -165,21 +161,5 @@ public class XBuild {
 //        } catch (ClassNotFoundException e) {
 //            XposedBridge.log(" DESCRIPTION 错误: " + e.getMessage());
 //        }
-    }
-
-    private static HashMap<String, String> sdkLevel;
-
-    static {
-        if (sdkLevel == null) {
-            sdkLevel = new HashMap<>();
-        }
-        sdkLevel.put("19", "4.4");
-        sdkLevel.put("20", "5.0");
-        sdkLevel.put("21", "5.1");
-    }
-
-    private String randomSdkLevel() {
-        Random r = new Random();
-        return String.valueOf(r.nextInt(3) + 19);
     }
 }
