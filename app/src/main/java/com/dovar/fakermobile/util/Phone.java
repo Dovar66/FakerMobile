@@ -16,7 +16,7 @@ public class Phone {
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
         getType(sharePkgParam);
 //        Bluetooth(sharePkgParam);
-//        Wifi(sharePkgParam);
+        Wifi(sharePkgParam);
         Telephony(sharePkgParam);
     }
 
@@ -157,12 +157,40 @@ public class Phone {
     public void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
         String TelePhone = "android.telephony.TelephonyManager";
         try {
-            XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getDeviceId", XC_MethodReplacement.returnConstant(SharedPref.getXValue("IMEI")));
-            XposedHelpers.findAndHookMethod("com.android.internal.telephony.PhoneSubInfo", loadPkgParam.classLoader, "getDeviceId", XC_MethodReplacement.returnConstant(SharedPref.getXValue("IMEI")));
+            XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
+                    XposedBridge.log(" TelephonyManager.IMEI_1");
+
+                    return SharedPref.getXValue("IMEI");
+                }
+            });
+            XposedHelpers.findAndHookMethod("com.android.internal.telephony.PhoneSubInfo", loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
+                    XposedBridge.log(" TelephonyManager.IMEI_2");
+
+                    return SharedPref.getXValue("IMEI");
+                }
+            });
 
             if (Build.VERSION.SDK_INT < 22) {
-                XposedHelpers.findAndHookMethod("com.android.internal.telephony.gsm.GSMPhone", loadPkgParam.classLoader, "getDeviceId", XC_MethodReplacement.returnConstant(SharedPref.getXValue("IMEI")));
-                XposedHelpers.findAndHookMethod("com.android.internal.telephony.PhoneProxy", loadPkgParam.classLoader, "getDeviceId", XC_MethodReplacement.returnConstant(SharedPref.getXValue("IMEI")));
+                XposedHelpers.findAndHookMethod("com.android.internal.telephony.gsm.GSMPhone", loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
+                        XposedBridge.log(" TelephonyManager.IMEI_3");
+
+                        return SharedPref.getXValue("IMEI");
+                    }
+                });
+                XposedHelpers.findAndHookMethod("com.android.internal.telephony.PhoneProxy", loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
+                        XposedBridge.log(" TelephonyManager.IMEI_4");
+
+                        return SharedPref.getXValue("IMEI");
+                    }
+                });
             }
         } catch (Exception ex) {
             XposedBridge.log(" IMEI 错误: " + ex.getMessage());

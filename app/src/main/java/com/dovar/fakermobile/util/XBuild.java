@@ -1,6 +1,8 @@
 package com.dovar.fakermobile.util;
 
+import android.content.ContentResolver;
 import android.os.Build;
+import android.provider.Settings;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -14,8 +16,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class XBuild {
 
     public XBuild(XC_LoadPackage.LoadPackageParam sharePkgParam) {
-//        AndroidSerial(sharePkgParam);
-//        BaseBand(sharePkgParam);
+        AndroidSerial(sharePkgParam);
+        BaseBand(sharePkgParam);
         BuildProp(sharePkgParam);
     }
 
@@ -126,20 +128,20 @@ public class XBuild {
         });
 
 
-//        try {
-//            XposedHelpers.findAndHookMethod("android.provider.Settings.Secure", loadPkgParam.classLoader, "getString", ContentResolver.class, String.class, new XC_MethodHook() {
-//
-//                @Override
-//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                    if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
-//                        param.setResult(SharedPref.getXValue("AndroidID"));
-//                    }
-//                    XposedBridge.log("android.provider.Settings.Secure");
-//                }
-//            });
-//        } catch (Exception ex) {
-//            XposedBridge.log(" Android ID 错误: " + ex.getMessage());
-//        }
+        try {
+            XposedHelpers.findAndHookMethod("android.provider.Settings.Secure", loadPkgParam.classLoader, "getString", ContentResolver.class, String.class, new XC_MethodHook() {
+
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+                        param.setResult(SharedPref.getXValue("AndroidID"));
+                    }
+                    XposedBridge.log("android.provider.Settings.Secure");
+                }
+            });
+        } catch (Exception ex) {
+            XposedBridge.log(" Android ID 错误: " + ex.getMessage());
+        }
 
 //        try {
 //            Class<?> cls = Class.forName("android.os.SystemProperties");

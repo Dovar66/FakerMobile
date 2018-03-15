@@ -1,5 +1,9 @@
 package com.dovar.fakermobile.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Common {
     public static final String PREFS_FILE = "Device";
     public static final String PACKAGE_NAME = "com.dovar.fakermobile";
@@ -58,4 +62,7 @@ public class Common {
             "com.adb.android.app.iti",
             "com.touchtv.touchtv",
             "com.mobileiron"};
+
+    public static final Set<String> DEFAULT_KEYWORD_SET = new HashSet<>(Arrays.asList(DEFAULT_KEYWORD_LIST));
+
 }

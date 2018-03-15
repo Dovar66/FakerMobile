@@ -23,4 +23,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <EditText
+        android:id="@+id/et_imei"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:hint="imei"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <EditText
+        android:id="@+id/et_android_id"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:hint="android_id"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 </android.support.constraint.ConstraintLayout>

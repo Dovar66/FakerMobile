@@ -1,6 +1,7 @@
 package com.dovar.fakermobile;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.Size;
 
 import java.io.BufferedReader;
@@ -496,6 +497,36 @@ public class SimulateDataTemp {
             imei = imei + k;
         }
         return imei;
+    }
+
+    public static String generateAndriodID() {
+        int a = r.nextInt(10);
+        int b = r.nextInt(10);
+        String m_szDevIDShort = "" + a + b +
+                Build.BOARD.length() % 10 + Build.BRAND.length() % 10 +
+
+                Build.CPU_ABI.length() % 10 + Build.DEVICE.length() % 10 +
+
+                Build.DISPLAY.length() % 10 + Build.HOST.length() % 10 +
+
+                Build.ID.length() % 10 + Build.MANUFACTURER.length() % 10 +
+
+                Build.MODEL.length() % 10 + Build.PRODUCT.length() % 10 +
+
+                Build.TAGS.length() % 10 + Build.TYPE.length() % 10 +
+
+                Build.USER.length() % 10; //13 位
+
+        //使用硬件信息拼凑出来的15位号码
+        return m_szDevIDShort;
+    }
+
+    public static String getRandData(int size) {
+        String str2 = "";
+        for (int i = 0; i < size; i++) {
+            str2 += Integer.toHexString(Byte.valueOf((byte) r.nextInt(17)).byteValue() & 0xF);
+        }
+        return str2;
     }
 }
 

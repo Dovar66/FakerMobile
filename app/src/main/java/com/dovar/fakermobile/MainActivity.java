@@ -5,6 +5,7 @@ import android.support.annotation.Size;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,12 +15,16 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    EditText et_imei;
+    EditText et_android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        et_imei = (EditText) findViewById(R.id.et_imei);
+        et_android_id = (EditText) findViewById(R.id.et_android_id);
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View mView) {
@@ -33,21 +38,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDatas() {
+        String imei_et = et_imei.getText().toString();
+        String android_id_et = et_android_id.getText().toString();
+
         String text = "";
         int index = new Random().nextInt(SimulateDataTemp.imeiStore.size());
         HashMap<String, String> data = SimulateDataTemp.imeiStore.get(index);
         SharedPref mySP = new SharedPref(getApplicationContext());
         mySP.setSharedPref("brand", data.get("brand"));
         mySP.setSharedPref("model", data.get("model"));
-        String imei=SimulateDataTemp.generateImei(data.get("imei"));
+        String imei = SimulateDataTemp.generateImei(data.get("imei"));
+        if (!TextUtils.isEmpty(imei_et)) {
+            imei = imei_et;
+        }
         mySP.setSharedPref("IMEI", imei);
         String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
             String[] size = display.split("\\*");
             try {
-                mySP.setintSharedPref("width", Integer.parseInt(size[0]));
+                mySP.setintSharedPref("width", 1440);
                 if (size.length > 1) {
-                    mySP.setintSharedPref("height", Integer.parseInt(size[1]));
+                    mySP.setintSharedPref("height", 2560);
                 }
             } catch (Exception me) {
                 me.printStackTrace();
@@ -95,7 +106,13 @@ public class MainActivity extends AppCompatActivity {
 //        text += tm.getNetworkOperatorName() + "\n";//CHINA MOBILE
 //        text += tm.getSimSerialNumber() + "\n";
 //        text += tm.getNetworkType();
+        String androidId = SimulateDataTemp.getRandData(16);
+        if (!TextUtils.isEmpty(android_id_et)) {
+            androidId = android_id_et;
+        }
+        mySP.setSharedPref("AndroidID", androidId); //  android id
 
+        text += androidId;
         ((TextView) findViewById(R.id.tv)).setText(text);
     }
 
@@ -109,29 +126,30 @@ public class MainActivity extends AppCompatActivity {
         mySP.setSharedPref("model", "HUAWEI G750-T01"); //手机的型号 设备名称
         mySP.setSharedPref("AndroidVer", "5.1"); //系统版本
         mySP.setSharedPref("API", "22"); //系统的API级别 SDK
-//        mySP.setSharedPref("serial", "aee5060e"); // 串口序列号
-//        mySP.setSharedPref("getBaseband", "SCL23KDU1BNG3"); // get 参数
-//        mySP.setSharedPref("BaseBand", "REL"); // 固件版本
-//        mySP.setSharedPref("board", "msm8916"); //主板
-//        mySP.setSharedPref("ABI", "armeabi-v7a"); //  设备指令集名称 1
-//        mySP.setSharedPref("ABI2", "armeabi"); //   设备指令集名称 2
-//        mySP.setSharedPref("device", "hwG750-T01"); //设备驱动名称
-//        mySP.setSharedPref("display", "R7c_11_151207"); //设备显示的版本包 固件版本
-        //  指纹 设备的唯一标识。由设备的多个信息拼接合成。
-//        mySP.setSharedPref("fingerprint", "Huawei/G750-T01/hwG750-T01:4.2.2/HuaweiG750-T01/C00B152:user/ota-rel-keys,release-keys");
-//        mySP.setSharedPref("NAME", "mt6592"); //设备硬件名称
-//        mySP.setSharedPref("ID", "KTU84P"); //设备版本号
-//        mySP.setSharedPref("Manufacture", "HUAWEI"); //设备制造商
-//        mySP.setSharedPref("product", "hwG750-T01"); //设备驱动名称
-//        mySP.setSharedPref("booltloader", "unknown"); //设备引导程序版本号
-//        mySP.setSharedPref("host", "ubuntu-121-114"); //设备主机地址
-//        mySP.setSharedPref("build_tags", "release-keys"); //设备标签
-//        mySP.setSharedPref("shenbei_type", "user"); //设备版本类型
-//        mySP.setSharedPref("incrementalincremental", "eng.root.20151207"); //源码控制版本号
+        mySP.setSharedPref("AndroidID", "fc4ad25f66d554a8"); //  android id
 
-//        mySP.setintSharedPref("time", 123456789);// 固件时间
-//        mySP.setSharedPref("AndroidID", "fc4ad25f66d554a8"); //  android id
-//        mySP.setSharedPref("DESCRIPTION", "jfltexx-user 4.3 JSS15J I9505XXUEML1 release-keys"); //用户的KEY
+        mySP.setSharedPref("serial", "aee5060e"); // 串口序列号
+        mySP.setSharedPref("getBaseband", "SCL23KDU1BNG3"); // get 参数
+        mySP.setSharedPref("BaseBand", "REL"); // 固件版本
+        mySP.setSharedPref("board", "msm8916"); //主板
+        mySP.setSharedPref("ABI", "armeabi-v7a"); //  设备指令集名称 1
+        mySP.setSharedPref("ABI2", "armeabi"); //   设备指令集名称 2
+        mySP.setSharedPref("device", "hwG750-T01"); //设备驱动名称
+        mySP.setSharedPref("display", "R7c_11_151207"); //设备显示的版本包 固件版本
+//          指纹 设备的唯一标识。由设备的多个信息拼接合成。
+        mySP.setSharedPref("fingerprint", "Huawei/G750-T01/hwG750-T01:4.2.2/HuaweiG750-T01/C00B152:user/ota-rel-keys,release-keys");
+        mySP.setSharedPref("NAME", "mt6592"); //设备硬件名称
+        mySP.setSharedPref("ID", "KTU84P"); //设备版本号
+        mySP.setSharedPref("Manufacture", "HUAWEI"); //设备制造商
+        mySP.setSharedPref("product", "hwG750-T01"); //设备驱动名称
+        mySP.setSharedPref("booltloader", "unknown"); //设备引导程序版本号
+        mySP.setSharedPref("host", "ubuntu-121-114"); //设备主机地址
+        mySP.setSharedPref("build_tags", "release-keys"); //设备标签
+        mySP.setSharedPref("shenbei_type", "user"); //设备版本类型
+        mySP.setSharedPref("incrementalincremental", "eng.root.20151207"); //源码控制版本号
+
+        mySP.setintSharedPref("time", 123456789);// 固件时间
+        mySP.setSharedPref("DESCRIPTION", "jfltexx-user 4.3 JSS15J I9505XXUEML1 release-keys"); //用户的KEY
 
 
 
@@ -153,16 +171,16 @@ public class MainActivity extends AppCompatActivity {
 
         mySP.setintSharedPref("SimState", 5); // 手机卡状态 SIM_STATE_READY
 
-//        mySP.setintSharedPref("phonetype", 5); // 手机类型
-//        mySP.setSharedPref("LYMAC", "BC:1A:EA:D9:8D:98");//蓝牙 MAC
-//        mySP.setSharedPref("WifiMAC", "a8:a6:68:a3:d9:ef"); // WIF mac地址
-//        mySP.setSharedPref("WifiName", "免费WIFI"); // 无线路由器名
-//        mySP.setSharedPref("BSSID", "ce:ea:8c:1a:5c:b2"); // 无线路由器地址
-//        mySP.setSharedPref("IMSI", "460017932859596");
-//        mySP.setSharedPref("gjISO", "cn");// 国家iso代码
-//        mySP.setSharedPref("CountryCode", "cn");// 手机卡国家
-//        mySP.setSharedPref("deviceversion", "100"); // 返回系统版本
-//        mySP.setintSharedPref("getIP", -123456789); // 内网ip(wifl可用)
+        mySP.setintSharedPref("phonetype", 5); // 手机类型
+        mySP.setSharedPref("LYMAC", "BC:1A:EA:D9:8D:98");//蓝牙 MAC
+        mySP.setSharedPref("WifiMAC", "a8:a6:68:a3:d9:ef"); // WIF mac地址
+        mySP.setSharedPref("WifiName", "免费WIFI"); // 无线路由器名
+        mySP.setSharedPref("BSSID", "ce:ea:8c:1a:5c:b2"); // 无线路由器地址
+        mySP.setSharedPref("IMSI", "460017932859596");
+        mySP.setSharedPref("gjISO", "cn");// 国家iso代码
+        mySP.setSharedPref("CountryCode", "cn");// 手机卡国家
+        mySP.setSharedPref("deviceversion", "100"); // 返回系统版本
+        mySP.setintSharedPref("getIP", -123456789); // 内网ip(wifl可用)
 
 
     /*
