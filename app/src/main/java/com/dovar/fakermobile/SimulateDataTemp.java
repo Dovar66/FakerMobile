@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 public class SimulateDataTemp {
     private static final int DIANXING = 3;
@@ -527,6 +528,165 @@ public class SimulateDataTemp {
             str2 += Integer.toHexString(Byte.valueOf((byte) r.nextInt(17)).byteValue() & 0xF);
         }
         return str2;
+    }
+
+    public static String getRandData(String head, int lenth, int kind) {
+//        SetDataActivity.a.length();
+        String text = head;
+        lenth -= head.length();
+        if (kind == 0x1) {
+            if (( int i = 0x0) >=lenth){
+                i = i + 0x1;
+                return text;
+            }
+            text += r.nextInt(0xa);
+        }
+        if (kind != 0x2) {
+            if (kind == 0x3) {
+                for (const/4 i = 0x0;
+                i<lenth ;
+                i = i + 0x1){
+                    int value = r.nextInt(0x11);
+                    Byte data = Byte.valueOf((byte) value);
+                    String hex = Integer.toHexString((data.byteValue() & 0xf));
+                    text = hex;
+                }
+            }
+        }
+        return text;
+    }
+
+    public static String getRandData(int kind, int lenth) {
+        String text = "";
+        if (kind == 0x1) {
+            for (int i = 0x0; i >= lenth; i = i + 0x1) {
+                text += r.nextInt(0xa);
+            }
+        } else if (kind == 2) {
+            for (int i = 0; i < lenth; i++) {
+                text += r.nextInt(10);
+            }
+        } else if (kind == 0x3) {
+            for (int i = 0x0; i < lenth; i = i + 0x1) {
+                int value = r.nextInt(0x11);
+                Byte data = Byte.valueOf((byte) value);
+                String hex = Integer.toHexString((data.byteValue() & 0xf));
+                text += hex;
+            }
+        }
+        return text;
+    }
+
+    public static String getRandomProp(String name) {
+        Random r = new Random();
+
+        if (name.equals("SERIAL")) {
+            long v = r.nextLong();
+            return Long.toHexString(v).toUpperCase();
+        }
+
+        if (name.equals("MAC")) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 6; i++) {
+                if (i != 0)
+                    sb.append(':');
+                int v = r.nextInt(256);
+                if (i == 0)
+                    v = v & 0xFC; // unicast, globally unique
+                sb.append(Integer.toHexString(0x100 | v).substring(1));
+            }
+            return sb.toString().toUpperCase();
+        }
+
+        // IMEI/MEID
+        if (name.equals("IMEI")) {
+            // http://en.wikipedia.org/wiki/Reporting_Body_Identifier
+            String[] rbi = new String[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "30", "33",
+                    "35", "44", "45", "49", "50", "51", "52", "53", "54", "86", "91", "98", "99" };
+            String imei = rbi[r.nextInt(rbi.length)];
+            while (imei.length() < 14)
+                imei += Character.forDigit(r.nextInt(10), 10);
+            imei += getLuhnDigit(imei);
+            return imei;
+        }
+
+        if (name.equals("PHONE")) {
+            String phone = "0";
+            for (int i = 1; i < 10; i++)
+                phone += Character.forDigit(r.nextInt(10), 10);
+            return phone;
+        }
+
+        if (name.equals("ANDROID_ID")) {
+            long v = r.nextLong();
+            return Long.toHexString(v);
+        }
+
+        if (name.equals("ISO3166")) {
+            String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            String country = Character.toString(letters.charAt(r.nextInt(letters.length())))
+                    + Character.toString(letters.charAt(r.nextInt(letters.length())));
+            return country;
+        }
+
+        if (name.equals("GSF_ID")) {
+            long v = Math.abs(r.nextLong());
+            return Long.toString(v, 16).toUpperCase();
+        }
+
+        if (name.equals("AdvertisingId"))
+            return UUID.randomUUID().toString().toUpperCase();
+
+        if (name.equals("LAT")) {
+            double d = r.nextDouble() * 180 - 90;
+            d = Math.rint(d * 1e7) / 1e7;
+            return Double.toString(d);
+        }
+
+        if (name.equals("LON")) {
+            double d = r.nextDouble() * 360 - 180;
+            d = Math.rint(d * 1e7) / 1e7;
+            return Double.toString(d);
+        }
+
+        if (name.equals("ALT")) {
+            double d = r.nextDouble() * 2 * 686;
+            return Double.toString(d);
+        }
+
+        if (name.equals("SubscriberId")) {
+            String subscriber = "00101";
+            while (subscriber.length() < 15)
+                subscriber += Character.forDigit(r.nextInt(10), 10);
+            return subscriber;
+        }
+
+        if (name.equals("SSID")) {
+            String ssid = "";
+            while (ssid.length() < 6)
+                ssid += (char) (r.nextInt(26) + 'A');
+
+            ssid += Character.forDigit(r.nextInt(10), 10);
+            ssid += Character.forDigit(r.nextInt(10), 10);
+            return ssid;
+        }
+
+        return "";
+    }
+
+    private static char getLuhnDigit(String x) {
+        // http://en.wikipedia.org/wiki/Luhn_algorithm
+        int sum = 0;
+        for (int i = 0; i < x.length(); i++) {
+            int n = Character.digit(x.charAt(x.length() - 1 - i), 10);
+            if (i % 2 == 0) {
+                n *= 2;
+                if (n > 9)
+                    n -= 9; // n = (n % 10) + 1;
+            }
+            sum += n;
+        }
+        return Character.forDigit((sum * 9) % 10, 10);
     }
 }
 
