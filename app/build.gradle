@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.dovar.fakermobile"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -17,21 +16,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    productFlavors {
-        Touchtv_test {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "Touchtv_test"]
-        }
-    }
 }
 
 dependencies {
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.alibaba:fastjson:1.2.46'
+    compile 'com.alibaba:fastjson:1.1.68.android'
 
     provided files('libs/XposedBridgeApi-54.jar')
 }

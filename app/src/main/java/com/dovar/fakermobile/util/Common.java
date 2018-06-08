@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Common {
     public static final String PREFS_FILE = "Device";
-    public static final String PACKAGE_NAME = "com.dovar.fakermobile";
+    public static final String PACKAGE_NAME = "com.soft.apk008v";
 
 
     public static final String[] DEFAULT_KEYWORD_LIST = new String[]{"supersu", "superuser", "Superuser",
@@ -60,9 +60,16 @@ public class Common {
             "nl.ziggo.android.tv",
             "com.orange.fr.ocs",
             "com.adb.android.app.iti",
+            "com.dovar.testxp",
             "com.touchtv.touchtv",
             "com.mobileiron"};
 
     public static final Set<String> DEFAULT_KEYWORD_SET = new HashSet<>(Arrays.asList(DEFAULT_KEYWORD_LIST));
 
+    public static final Set<String> DEFAULT_APPS_SET = new HashSet<String>(Arrays.asList(DEFAULT_APPS_LIST));
+
+    public static final String[] DEFAULT_COMMAND_LIST = new String[]{"su", "which", "busybox", "pm", "am", "sh", "ps"};
+    public static final Set<String> DEFAULT_COMMAND_SET = new HashSet<String>(Arrays.asList(DEFAULT_COMMAND_LIST));
+    public static final String[] DEFAULT_LIBNAME_LIST = new String[]{"tool-checker"}; // RootBearNative
+    public static final Set<String> DEFAULT_LIBNAME_SET = new HashSet<String>(Arrays.asList(DEFAULT_LIBNAME_LIST));
 }

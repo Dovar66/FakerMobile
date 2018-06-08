@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         SimulateDataTemp.init(this);
-        Save();
+//        Save();
     }
 
     private void updateDatas() {
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPref mySP = new SharedPref(getApplicationContext());
         mySP.setSharedPref("brand", data.get("brand"));
         mySP.setSharedPref("model", data.get("model"));
-        String imei = SimulateDataTemp.generateImei(data.get("imei"));
+        String imei = SimulateDataTemp.getRandomProp("IMEI");
         if (!TextUtils.isEmpty(imei_et)) {
             imei = imei_et;
         }
@@ -106,17 +106,35 @@ public class MainActivity extends AppCompatActivity {
 //        text += tm.getNetworkOperatorName() + "\n";//CHINA MOBILE
 //        text += tm.getSimSerialNumber() + "\n";
 //        text += tm.getNetworkType();
-        String androidId = SimulateDataTemp.getRandData(16);
+        String androidId = SimulateDataTemp.getRandomProp("ANDROID_ID");
         if (!TextUtils.isEmpty(android_id_et)) {
             androidId = android_id_et;
         }
         mySP.setSharedPref("AndroidID", androidId); //  android id
+        mySP.setSharedPref("IMSI", "460017932859596");
 
+        mySP.setSharedPref("WifiName",SimulateDataTemp.getRandomProp("SSID"));
+        mySP.setSharedPref("WifiMAC", SimulateDataTemp.getRandomProp("MAC")); // WIF mac地址
         text += androidId;
         ((TextView) findViewById(R.id.tv)).setText(text);
     }
 
     private void Save() {
+//        TelephonyManager tele = (TelephonyManager) getSystemService("phone");
+//        CellLocation cell = tele.getCellLocation();
+//        String locationStr = "";
+//        if (cell instanceof GsmCellLocation) {
+//            GsmCellLocation location = (GsmCellLocation) cell;
+//            int lac = location.getLac();
+//            int cellId = location.getCid();
+//            locationStr = lac + "_" + cellId;
+//        } else if (cell instanceof CdmaCellLocation) {
+//            CdmaCellLocation location = (CdmaCellLocation)cell;
+//            int lac = location.getNetworkId();
+//            int cellId = location.getBaseStationId();
+//            locationStr = lac + "_" + cellId;
+//        }
+
         SharedPref mySP = new SharedPref(getApplicationContext());
 
     /*
@@ -208,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
         30.2425140000,120.1404220000 杭州
      */
 
-//        mySP.setfloatharedPref("lat", (float) 30.2425140000); // 纬度
-//        mySP.setfloatharedPref("log", (float) 120.1404220000); // 经度
+        mySP.setfloatharedPref("lat", (float) 30.2425140000); // 纬度
+        mySP.setfloatharedPref("log", (float) 120.1404220000); // 经度
 
 
         Toast.makeText(this, "保存成功", Toast.LENGTH_LONG).show();

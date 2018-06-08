@@ -13,7 +13,7 @@ public class SharedPref {
 
     public SharedPref(Context appContext) {
         shareContext = appContext;
-        mySharedPref = shareContext.getSharedPreferences(Common.PREFS_FILE, 1);
+        mySharedPref = shareContext.getSharedPreferences(Common.PREFS_FILE, Context.MODE_PRIVATE);
     }
 
     public void setSharedPref(String key, String value) {

@@ -353,7 +353,7 @@ public class SimulateDataTemp {
         int[] types = new int[2];
         if (networkOperatorName == null) return types;
         Random r = new Random();
-        if (r.nextBoolean()) {
+        if (true) {
             types[0] = TYPE_MOBILE;
             ArrayList<Integer> netType = new ArrayList<>();
             netType.add(NETWORK_TYPE_GPRS);
@@ -530,31 +530,31 @@ public class SimulateDataTemp {
         return str2;
     }
 
-    public static String getRandData(String head, int lenth, int kind) {
-//        SetDataActivity.a.length();
-        String text = head;
-        lenth -= head.length();
-        if (kind == 0x1) {
-            if (( int i = 0x0) >=lenth){
-                i = i + 0x1;
-                return text;
-            }
-            text += r.nextInt(0xa);
-        }
-        if (kind != 0x2) {
-            if (kind == 0x3) {
-                for (const/4 i = 0x0;
-                i<lenth ;
-                i = i + 0x1){
-                    int value = r.nextInt(0x11);
-                    Byte data = Byte.valueOf((byte) value);
-                    String hex = Integer.toHexString((data.byteValue() & 0xf));
-                    text = hex;
-                }
-            }
-        }
-        return text;
-    }
+//    public static String getRandData(String head, int lenth, int kind) {
+////        SetDataActivity.a.length();
+//        String text = head;
+//        lenth -= head.length();
+//        if (kind == 0x1) {
+//            if (( int i = 0x0) >=lenth){
+//                i = i + 0x1;
+//                return text;
+//            }
+//            text += r.nextInt(0xa);
+//        }
+//        if (kind != 0x2) {
+//            if (kind == 0x3) {
+//                for (const/4 i = 0x0;
+//                i<lenth ;
+//                i = i + 0x1){
+//                    int value = r.nextInt(0x11);
+//                    Byte data = Byte.valueOf((byte) value);
+//                    String hex = Integer.toHexString((data.byteValue() & 0xf));
+//                    text = hex;
+//                }
+//            }
+//        }
+//        return text;
+//    }
 
     public static String getRandData(int kind, int lenth) {
         String text = "";

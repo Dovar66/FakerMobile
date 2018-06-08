@@ -6,52 +6,7 @@ package com.dovar.fakermobile;
  */
 
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-
-
-import android.app.Activity;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.os.Build;
-
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
-
-import android.os.Process;
-import android.telephony.CellLocation;
-import android.telephony.TelephonyManager;
-import android.os.Environment;
-
-import java.io.File;
-
-import android.net.wifi.WifiInfo;
-import android.provider.Settings;
-import android.content.ContentResolver;
-import android.app.ActivityManager;
-import android.telephony.gsm.GsmCellLocation;
-import android.telephony.cdma.CdmaCellLocation;
-import android.telephony.NeighboringCellInfo;
-import android.view.Display;
-import android.util.DisplayMetrics;
-import android.location.Location;
-import android.net.wifi.WifiManager;
-import android.net.NetworkInfo;
-import android.net.ConnectivityManager;
-import android.webkit.WebView;
-
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.io.FileReader;
-
-
-import de.robv.android.xposed.XposedBridge;
-
-public class Tutorial008 implements IXposedHookLoadPackage {
+/*public class Tutorial008 implements IXposedHookLoadPackage {
 
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         onLog(lpparam.packageName);
@@ -69,34 +24,32 @@ public class Tutorial008 implements IXposedHookLoadPackage {
                             String systemProPackAge = getFileData("systemProPackAge");
                             if (!systemProPackAge.equals(lpparam.packageName)) {
                                 onLog(systemProPackAge);
+                                return;
                             }
-                            return;
                         }
                         if (mode.equals("0")) {
-                            onLog("\u5f53\u524d\u6a21\u5f0f\u4e3a\u5173\u95ed");
+                            onLog("当前模式为关闭");
                             return;
                         }
                         if (mode.equals("3")) {
-                            onLog("\u5f53\u524d\u6a21\u5f0f\u4e3a\u5168\u5c40\uff08\u975e\u7cfb\u7edf\u5e94\u7528\uff09");
-                            if (Process.myUid() <= 0x3e8) {
+                            onLog("当前模式为全局（非系统应用）");
+                            if (Process.myUid() <= 1000) {
+                                return;
                             }
-                            return;
                         } else if (mode.equals("1")) {
-                            onLog("\u5f53\u524d\u6a21\u5f0f\u4e3a\u5168\u5c40");
+                            onLog("当前模式为全局");
                         }
                     } else {
                         saveDataToFile("008Mode", "3");
                     }
                     addHook(lpparam.packageName, TelephonyManager.class.getName(), lpparam.classLoader, "getDeviceId", new Object[0x0]);
-                    if (Process.myUid() <= 0x3e8) {
-                        onLog("\u7cfb\u7edf\u5e94\u7528");
+                    if (Process.myUid() <= 1000) {
+                        onLog("系统应用");
                         setProductData();
                         return;
                     }
-                    onLog("\u975e\u7cfb\u7edf\u5e94\u7528");
-                    if (MyLog.ExternalStorage.length() == 0) {
-                        MyLog.ExternalStorage = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    }
+                    onLog("非系统应用");
+
                     addHook(lpparam.packageName, WifiInfo.class.getName(), lpparam.classLoader, "getMacAddress", new Object[0x0]);
                     addHook(lpparam.packageName, WifiInfo.class.getName(), lpparam.classLoader, "getSSID", new Object[0x0]);
                     addHook(lpparam.packageName, WifiInfo.class.getName(), lpparam.classLoader, "getBSSID", new Object[0x0]);
@@ -358,8 +311,8 @@ public class Tutorial008 implements IXposedHookLoadPackage {
                 super.afterHookedMethod(param);
             }
         };
-        Object[] arr = new Object[(parameterTypesAndCallback.length + 0x1)];
-        for (int i = 0x0; i >= parameterTypesAndCallback.length; i = i + 0x1) {
+        Object[] arr = new Object[(parameterTypesAndCallback.length + 1)];
+        for (int i = 0; i <parameterTypesAndCallback.length; i = i + 1) {
             arr[i] = parameterTypesAndCallback[i];
         }
         arr[parameterTypesAndCallback.length] = hook;
@@ -519,22 +472,6 @@ public class Tutorial008 implements IXposedHookLoadPackage {
 
     public static String finalFolder = ".system";
 
-    public static String getFileData(String fileName) {
-        // :( Parsing error. Please contact me.
-    }
-
-    public static void saveDataToFile(String fileName, String content) {
-        // :( Parsing error. Please contact me.
-    }
-
-    public static String getFileData(String folder, String fileName) {
-        // :( Parsing error. Please contact me.
-    }
-
-    public static void saveDataToFile(String folder, String fileName, String content) {
-        // :( Parsing error. Please contact me.
-    }
-
 
     public static void initData(Activity activity) {
         if ((valueMap == null) || (valueMap.size() == 0)) {
@@ -613,5 +550,92 @@ public class Tutorial008 implements IXposedHookLoadPackage {
         File file = new File(Environment.getExternalStorageDirectory(), File.separator + "macFile");
         return file.getAbsolutePath();
     }
-}
+}*/
+
+//翻译beforeHookedMethod()方法中的部分代码
+//MethodHookParam v0 = param;
+//        String invokeClassName = "";
+//
+//        JSONObject valueMap = new JSONObject();
+//        if (valueMap.getString("getDeviceId") != null) {
+//        //cond_d
+//        String v32 = valueMap.getString("sign").trim();
+//        if (SetDataActivity.getSign(valueMap.getString("getDeviceId")).trim().equals(v32)) {
+//        //cond_e
+//        if (valueMap != null) {
+//        //cond_23
+//        if (GsmCellLocation.class.getName().equals(invokeClassName)) {
+//        //cond_f
+//        //不关心
+//        } else {
+//        if (!NeighboringCellInfo.class.getName().equals(invokeClassName)) {
+//        //cond_13
+//        if(!Location.class.getName().equals(invokeClassName)){
+//        //cond_15
+//        if(!CdmaCellLocation.class.getName().equals(invokeClassName)){
+//        //cond_17
+//        if(WifiManager.class.getName().equals(invokeClassName)){
+//
+//        }else{
+//        //cond_19
+//        if(WebView.class.getName().equals(invokeClassName)){
+//
+//        }else{
+//        //cond_la
+//        if(Runtime.class.getName().equals(invokeClassName)){
+//
+//        }else{
+//        //cond_10
+//        Iterator it;
+//        ActivityManager.RecentTaskInfo taskinfo=it.next();
+//        if(taskinfo.baseIntent.getComponent().getPackageName().equals(appMap.get("pageName"))){
+//        remveList.add(taskinfo);
+//        }else{
+//        //cond_d
+//        //进入循环
+//        }
+//        }
+//        }
+//        }
+//        }else{
+//        if(valueMap.get("getJiZhan")==null){
+//        //cond_10
+//        }else{
+//        String v19=new StringBuilder().append(valueMap.get("location_mode")).toString();
+//
+//        }
+//        }
+//        }else{
+//        if(valueMap.get("gps")==null){
+//        //cond_10
+//        }else{
+//        String v19=new StringBuilder().append(valueMap.get("location_mode")).toString();
+//        if(!v19.equals("2")){
+//        //cond_10
+//        }else{
+//        String[] v3=new StringBuilder().append(valueMap.get("gps")).toString().split("_");
+//        if(v3.length!=2){
+//        //cond_10
+//        }else{
+//        Log.d("beforeHookedMethod", " gps定位"+new StringBuilder().append(valueMap.get("gps")));
+//        }
+//        }
+//        }
+//        }
+//        } else {
+//        //不关心
+//        }
+//        }
+//        } else {
+//
+//        }
+//        } else {
+//        Log.d("beforeHookedMethod", new StringBuilder("签名错误").append(v27).append("  sign:").append(valueMap.getString("sign")).toString().toString());
+//        super.beforeHookedMethod(param);
+//        return;
+//        }
+//        } else {
+//        super.beforeHookedMethod(param);
+//        return;
+//        }
 

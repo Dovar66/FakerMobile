@@ -4,9 +4,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 
 import com.dovar.fakermobile.util.Common;
-import com.dovar.fakermobile.util.Hook;
+import com.dovar.fakermobile.util.GPShook;
 import com.dovar.fakermobile.util.Phone;
 import com.dovar.fakermobile.util.Resolution;
+import com.dovar.fakermobile.util.RootCloak;
+import com.dovar.fakermobile.util.SharedPref;
 import com.dovar.fakermobile.util.XBuild;
 
 import java.util.Iterator;
@@ -29,161 +31,163 @@ public class XposedUtil implements IXposedHookLoadPackage {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
         if (mLoadPackageParam.packageName.equals("de.robv.android.xposed")) return;
-        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv")) {
-            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
+        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
+//            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
+            new RootCloak().handleLoadPackage(mLoadPackageParam);
             new XBuild(mLoadPackageParam);
             new Phone(mLoadPackageParam);
             new Resolution().Display(mLoadPackageParam);  //屏幕
+            GPShook.HookAndChange(mLoadPackageParam.classLoader, SharedPref.getfloatXValue("lat"),SharedPref.getfloatXValue("log"));
 
-            try {
-                //不能hook抽象方法
-                XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", mLoadPackageParam.classLoader, "getInstalledApplications", int.class, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-//                    param.setResult(null);
-                        XposedBridge.log("getInstalledApplications");
-
-                        List<ApplicationInfo> packages = (List<ApplicationInfo>) param.getResult(); // Get the results from the method call
-                        Iterator<ApplicationInfo> iter = packages.iterator();
-                        ApplicationInfo tempAppInfo;
-                        String tempPackageName;
-
-                        // 通过ApplicationInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
-                        while (iter.hasNext()) {
-                            tempAppInfo = iter.next();
-                            tempPackageName = tempAppInfo.packageName;
-                            if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
-                                iter.remove();
-                                XposedBridge.log("找到并隐藏包：" + tempPackageName);
-                            }
-                        }
-
-                        param.setResult(packages); // 将返回值设置为干净列表
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                XposedBridge.log("getInstalledApplications:" + e.getMessage());
-            }
-            try {
-                XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", mLoadPackageParam.classLoader, "getInstalledPackages", int.class, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-//                    param.setResult(null);
-                        XposedBridge.log("getInstalledPackages");
-
-                        List<PackageInfo> packages = (List<PackageInfo>) param.getResult(); // Get the results from the method call
-                        Iterator<PackageInfo> iter = packages.iterator();
-                        PackageInfo tempPackageInfo;
-                        String tempPackageName;
-
-                        // 通过PackageInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
-                        while (iter.hasNext()) {
-                            tempPackageInfo = iter.next();
-                            tempPackageName = tempPackageInfo.packageName;
-                            if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
-                                iter.remove();
-                                XposedBridge.log("找到并隐藏包：" + tempPackageName);
-                            }
-                        }
-
-                        param.setResult(packages); // 将返回值设置为干净列表
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                XposedBridge.log("getInstalledPackages  error");
-            }
-            try {
-                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningAppProcesses", new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-                        param.setResult(null);
-                        XposedBridge.log("getRunningAppProcesses");
-
-//                        List<ActivityManager.RunningAppProcessInfo> processes = (List<ActivityManager.RunningAppProcessInfo>) param.getResult(); // Get the results from the method call
-//                        Iterator<ActivityManager.RunningAppProcessInfo> iter = processes.iterator();
-//                        ActivityManager.RunningAppProcessInfo tempProcess;
-//                        String tempProcessName;
+//            try {
+//                //不能hook抽象方法
+//                XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", mLoadPackageParam.classLoader, "getInstalledApplications", int.class, new XC_MethodHook() {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+////                    param.setResult(null);
+//                        XposedBridge.log("getInstalledApplications");
 //
-//                        // 通过RunningAppProcessInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
+//                        List<ApplicationInfo> packages = (List<ApplicationInfo>) param.getResult(); // Get the results from the method call
+//                        Iterator<ApplicationInfo> iter = packages.iterator();
+//                        ApplicationInfo tempAppInfo;
+//                        String tempPackageName;
+//
+//                        // 通过ApplicationInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
 //                        while (iter.hasNext()) {
-//                            tempProcess = iter.next();
-//                            tempProcessName = tempProcess.processName;
-//                            if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
+//                            tempAppInfo = iter.next();
+//                            tempPackageName = tempAppInfo.packageName;
+//                            if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
 //                                iter.remove();
+//                                XposedBridge.log("找到并隐藏包：" + tempPackageName);
 //                            }
 //                        }
 //
-//                        param.setResult(processes); // 将返回值设置为干净列表
-
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            try {
-                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningServices", int.class, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-                        param.setResult(null);
-                        XposedBridge.log("getRunningServices");
-
-//                        List<ActivityManager.RunningServiceInfo> services = (List<ActivityManager.RunningServiceInfo>) param.getResult(); // 从方法调用获取结果
-//                        Iterator<ActivityManager.RunningServiceInfo> iter = services.iterator();
-//                        ActivityManager.RunningServiceInfo tempService;
-//                        String tempProcessName;
+//                        param.setResult(packages); // 将返回值设置为干净列表
+//                    }
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                XposedBridge.log("getInstalledApplications:" + e.getMessage());
+//            }
+//            try {
+//                XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", mLoadPackageParam.classLoader, "getInstalledPackages", int.class, new XC_MethodHook() {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+////                    param.setResult(null);
+//                        XposedBridge.log("getInstalledPackages");
 //
-//                        // 通过RunningServiceInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
+//                        List<PackageInfo> packages = (List<PackageInfo>) param.getResult(); // Get the results from the method call
+//                        Iterator<PackageInfo> iter = packages.iterator();
+//                        PackageInfo tempPackageInfo;
+//                        String tempPackageName;
+//
+//                        // 通过PackageInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
 //                        while (iter.hasNext()) {
-//                            tempService = iter.next();
-//                            tempProcessName = tempService.process;
-//                            if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
+//                            tempPackageInfo = iter.next();
+//                            tempPackageName = tempPackageInfo.packageName;
+//                            if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
 //                                iter.remove();
+//                                XposedBridge.log("找到并隐藏包：" + tempPackageName);
 //                            }
 //                        }
 //
-//                        param.setResult(services); //将返回值设置为干净列表
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningTasks", int.class, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-                        param.setResult(null);
-                        XposedBridge.log("getRunningTasks");
+//                        param.setResult(packages); // 将返回值设置为干净列表
+//                    }
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
 //
-//                        List<ActivityManager.RunningTaskInfo> services = (List<ActivityManager.RunningTaskInfo>) param.getResult(); // 从方法调用获取结果
-//                        Iterator<ActivityManager.RunningTaskInfo> iter = services.iterator();
-//                        ActivityManager.RunningTaskInfo tempTask;
-//                        String tempBaseActivity;
+//                XposedBridge.log("getInstalledPackages  error");
+//            }
+//            try {
+//                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningAppProcesses", new XC_MethodHook() {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+//                        param.setResult(null);
+//                        XposedBridge.log("getRunningAppProcesses");
 //
-//                        // 通过RunningTaskInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
-//                        while (iter.hasNext()) {
-//                            tempTask = iter.next();
-//                            tempBaseActivity = tempTask.baseActivity.flattenToString(); // Need to make it a string for comparison
-//                            if (tempBaseActivity != null && stringContainsFromSet(tempBaseActivity, keywordSet)) {
-//                                iter.remove();
-//                            }
-//                        }
+////                        List<ActivityManager.RunningAppProcessInfo> processes = (List<ActivityManager.RunningAppProcessInfo>) param.getResult(); // Get the results from the method call
+////                        Iterator<ActivityManager.RunningAppProcessInfo> iter = processes.iterator();
+////                        ActivityManager.RunningAppProcessInfo tempProcess;
+////                        String tempProcessName;
+////
+////                        // 通过RunningAppProcessInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
+////                        while (iter.hasNext()) {
+////                            tempProcess = iter.next();
+////                            tempProcessName = tempProcess.processName;
+////                            if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
+////                                iter.remove();
+////                            }
+////                        }
+////
+////                        param.setResult(processes); // 将返回值设置为干净列表
 //
-//                        param.setResult(services); // 将返回值设置为干净列表
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//                    }
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//            try {
+//                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningServices", int.class, new XC_MethodHook() {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+//                        param.setResult(null);
+//                        XposedBridge.log("getRunningServices");
+//
+////                        List<ActivityManager.RunningServiceInfo> services = (List<ActivityManager.RunningServiceInfo>) param.getResult(); // 从方法调用获取结果
+////                        Iterator<ActivityManager.RunningServiceInfo> iter = services.iterator();
+////                        ActivityManager.RunningServiceInfo tempService;
+////                        String tempProcessName;
+////
+////                        // 通过RunningServiceInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
+////                        while (iter.hasNext()) {
+////                            tempService = iter.next();
+////                            tempProcessName = tempService.process;
+////                            if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
+////                                iter.remove();
+////                            }
+////                        }
+////
+////                        param.setResult(services); //将返回值设置为干净列表
+//                    }
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            try {
+//                XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRunningTasks", int.class, new XC_MethodHook() {
+//                    @Override
+//                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.afterHookedMethod(param);
+//                        param.setResult(null);
+//                        XposedBridge.log("getRunningTasks");
+////
+////                        List<ActivityManager.RunningTaskInfo> services = (List<ActivityManager.RunningTaskInfo>) param.getResult(); // 从方法调用获取结果
+////                        Iterator<ActivityManager.RunningTaskInfo> iter = services.iterator();
+////                        ActivityManager.RunningTaskInfo tempTask;
+////                        String tempBaseActivity;
+////
+////                        // 通过RunningTaskInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
+////                        while (iter.hasNext()) {
+////                            tempTask = iter.next();
+////                            tempBaseActivity = tempTask.baseActivity.flattenToString(); // Need to make it a string for comparison
+////                            if (tempBaseActivity != null && stringContainsFromSet(tempBaseActivity, keywordSet)) {
+////                                iter.remove();
+////                            }
+////                        }
+////
+////                        param.setResult(services); // 将返回值设置为干净列表
+//                    }
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             try {
                 XposedHelpers.findAndHookMethod("android.app.ActivityManager", mLoadPackageParam.classLoader, "getRecentTasks", int.class, int.class, new XC_MethodHook() {
                     @Override
