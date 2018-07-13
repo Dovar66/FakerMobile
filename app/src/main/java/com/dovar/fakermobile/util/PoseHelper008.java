@@ -9,4 +9,8 @@ import com.alibaba.fastjson.JSONObject;
 
 public class PoseHelper008 {
     public static JSONObject valueMap = new JSONObject();
+
+    static {
+        valueMap.put("connect_mode", "1");
+    }
 }

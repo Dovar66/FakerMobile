@@ -14,8 +14,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class XBuild {
 
     public XBuild(XC_LoadPackage.LoadPackageParam sharePkgParam) {
-        AndroidSerial(sharePkgParam);
-        BaseBand(sharePkgParam);
+//        AndroidSerial(sharePkgParam);
+//        BaseBand(sharePkgParam);
         BuildProp(sharePkgParam);
     }
 
@@ -67,15 +67,15 @@ public class XBuild {
 
             XposedHelpers.findAndHookMethod("android.os.Build", loadPkgParam.classLoader, "getRadioVersion", new XC_MethodHook() {
 
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param)
-                                throws Throwable {
-                            //固件版本
-                            param.setResult(SharedPref.getXValue("BaseBand"));
-                            XposedBridge.log("getRadioVersion");
-                        }
+                @Override
+                protected void afterHookedMethod(MethodHookParam param)
+                        throws Throwable {
+                    //固件版本
+                    param.setResult(SharedPref.getXValue("BaseBand"));
+                    XposedBridge.log("getRadioVersion");
+                }
 
-                    });
+            });
 
         } catch (Exception e) {
             XposedBridge.log(" BaseBand 错误: " + e.getMessage());
@@ -88,10 +88,8 @@ public class XBuild {
         XposedHelpers.findAndHookMethod("android.os.SystemProperties", loadPkgParam.classLoader, "get", String.class, String.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
                 String methodName = param.method.getName();
                 if (methodName.startsWith("get")) {
-                    XposedBridge.log("getDeviceInfo");
                     try {
                         XposedHelpers.setStaticObjectField(Build.class, "BRAND", SharedPref.getXValue("brand"));
                         XposedHelpers.setStaticObjectField(Build.class, "MODEL", SharedPref.getXValue("model"));
@@ -121,6 +119,7 @@ public class XBuild {
                     } catch (Exception e) {
                         XposedBridge.log(" BuildProp 错误: " + e.getMessage());
                     }
+                    super.beforeHookedMethod(param);
                 }
             }
         });
@@ -149,7 +148,6 @@ public class XBuild {
         XposedHelpers.findAndHookMethod("android.os.SystemProperties", loadPkgParam.classLoader, "get", String.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
                 String methodName = param.method.getName();
                 if (methodName.startsWith("get")) {
                     XposedBridge.log("getDeviceInfo_string");
@@ -158,7 +156,7 @@ public class XBuild {
                         XposedHelpers.setStaticObjectField(Build.class, "MODEL", SharedPref.getXValue("model"));
                         XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", SharedPref.getXValue("API"));
                         XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", SharedPref.getXValue("AndroidVer"));
-                        XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
+                       /* XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
                         XposedHelpers.findField(Build.class, "CPU_ABI").set(null, SharedPref.getXValue("ABI"));
                         XposedHelpers.findField(Build.class, "CPU_ABI2").set(null, SharedPref.getXValue("ABI2"));
                         XposedHelpers.findField(Build.class, "DEVICE").set(null, SharedPref.getXValue("device"));
@@ -175,13 +173,14 @@ public class XBuild {
                         XposedHelpers.findField(Build.VERSION.class, "INCREMENTAL").set(null, SharedPref.getXValue("incrementalincremental")); //源码控制版本号
 
                         XposedHelpers.findField(android.os.Build.VERSION.class, "CODENAME").set(null, "REL"); //写死就行 这个值为固定
-                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build
+                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build*/
 
 //                        XposedHelpers.findField(Build.VERSION.class, "SDK_INT").set(null, pre.getInt("sdkint", 6));
 //                        XposedHelpers.setStaticObjectField(android.os.Build.class, "RADIO", pre.getString("radio", null));
                     } catch (Exception e) {
                         XposedBridge.log(" BuildProp 错误: " + e.getMessage());
                     }
+                    super.beforeHookedMethod(param);
                 }
             }
         });

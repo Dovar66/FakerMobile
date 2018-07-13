@@ -639,3 +639,31 @@ package com.dovar.fakermobile;
 //        return;
 //        }
 
+
+//connect_mode相关
+/*String mode=valueMap.getString("connect_mode");
+        if(NetworkInfo.class){
+        if(mode!=null&&mode=="1"){//wifi模式下修改值为WIFI
+        param.setResult("WIFI")
+        }
+        }
+
+        if(ConnectivityManager.class){
+        if(mode!=null){
+        if(mode=="1"||mode=="2"){//
+        NetworkInfo netInfo=param.getResult();
+        if(netInfo!=null){
+            if(param.args[0]==1&&mode="1"){
+                param.setResult(0)
+            }
+        }else{
+        if(param.args[0]==1&&mode=="2"){
+        param.args[0]=0;
+        }
+        }
+        }else{
+            0.系统默认,  不处理
+        }
+        }
+        }
+        }*/

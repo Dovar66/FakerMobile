@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity {
     EditText et_imei;
     EditText et_android_id;
 
+    public static String IMEI = "";
+    public static String AndroidID = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
         mySP.setSharedPref("brand", data.get("brand"));
         mySP.setSharedPref("model", data.get("model"));
         String imei = SimulateDataTemp.getRandomProp("IMEI");
-        if (!TextUtils.isEmpty(imei_et)) {
-            imei = imei_et;
-        }
+//        if (!TextUtils.isEmpty(imei_et)) {
+//            imei = imei_et;
+//        }
+        IMEI = imei;
         mySP.setSharedPref("IMEI", imei);
         String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
@@ -107,16 +111,18 @@ public class MainActivity extends AppCompatActivity {
 //        text += tm.getSimSerialNumber() + "\n";
 //        text += tm.getNetworkType();
         String androidId = SimulateDataTemp.getRandomProp("ANDROID_ID");
-        if (!TextUtils.isEmpty(android_id_et)) {
-            androidId = android_id_et;
-        }
+//        if (!TextUtils.isEmpty(android_id_et)) {
+//            androidId = android_id_et;
+//        }
+        AndroidID = androidId;
         mySP.setSharedPref("AndroidID", androidId); //  android id
         mySP.setSharedPref("IMSI", "460017932859596");
 
-        mySP.setSharedPref("WifiName",SimulateDataTemp.getRandomProp("SSID"));
+        mySP.setSharedPref("WifiName", SimulateDataTemp.getRandomProp("SSID"));
         mySP.setSharedPref("WifiMAC", SimulateDataTemp.getRandomProp("MAC")); // WIF mac地址
         text += androidId;
         ((TextView) findViewById(R.id.tv)).setText(text);
+
     }
 
     private void Save() {

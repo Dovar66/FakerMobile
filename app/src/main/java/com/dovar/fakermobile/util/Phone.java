@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -18,9 +19,9 @@ import de.robv.android.xposed.callbacks.XCallback;
 
 public class Phone {
     public Phone(XC_LoadPackage.LoadPackageParam sharePkgParam) {
-        getType(sharePkgParam);
+//        getType(sharePkgParam);
 //        Bluetooth(sharePkgParam);
-        Wifi(sharePkgParam);
+//        Wifi(sharePkgParam);
         Telephony(sharePkgParam);
     }
 
@@ -191,14 +192,34 @@ public class Phone {
     }
 
     public void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
-        String TelePhone = "android.telephony.TelephonyManager";
+//        try {
+//            XposedHelpers.findAndHookMethod(TelephonyManager.class.getName(), loadPkgParam.classLoader, "getDeviceId", Integer.TYPE.getName(), new XC_MethodHook() {
+//                @Override
+//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                    XposedBridge.log("before getDeviceId:0");
+//                    super.beforeHookedMethod(param);
+//                }
+//
+//                @Override
+//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                    XposedBridge.log("getDeviceId:0");
+//
+//                    param.setResult(SharedPref.getXValue("IMEI"));
+//                    super.afterHookedMethod(param);
+//                }
+//            });
+//        } catch (Exception ex) {
+//            XposedBridge.log(" IMEI 错误: " + ex.getMessage());
+//        }
+
         try {
-            XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement(XCallback.PRIORITY_LOWEST) {
+            XposedHelpers.findAndHookMethod(TelephonyManager.class.getName(), loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement(XCallback.PRIORITY_LOWEST) {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
-                    XposedBridge.log(" TelephonyManager.IMEI_1");
+                    String imei ="865163028177442";// SharedPref.getXValue("IMEI");//SimulateDataTemp.getRandomProp("IMEI");
+                    XposedBridge.log(" TelephonyManager.IMEI_1" + imei);
 
-                    return SharedPref.getXValue("IMEI");
+                    return imei;
                 }
             });
 
@@ -243,18 +264,18 @@ public class Phone {
             XposedBridge.log(" IMEI 错误: " + ex.getMessage());
         }
 
-        HookTelephony(TelePhone, loadPkgParam, "getLine1Number", SharedPref.getXValue("PhoneNumber"));
-        HookTelephony(TelePhone, loadPkgParam, "getSimSerialNumber", SharedPref.getXValue("SimSerial"));
-        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperator", SharedPref.getXValue("networktor")); // 网络运营商类型
-        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperatorName", SharedPref.getXValue("Carrier")); // 网络类型名
-        HookTelephony(TelePhone, loadPkgParam, "getSimOperator", SharedPref.getXValue("CarrierCode")); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
-        HookTelephony(TelePhone, loadPkgParam, "getSimOperatorName", SharedPref.getXValue("simopename")); // 运营商名字 中国联通
-        HookTelephony(TelePhone, loadPkgParam, "getSubscriberId", SharedPref.getXValue("IMSI"));
-
-        // FIXME: 2018/3/20
-//        HookTelephony(TelePhone, loadPkgParam, "getDeviceSoftwareVersion", SharedPref.getXValue("deviceversion"));// 返系统版本
-        HookTelephony(TelePhone, loadPkgParam, "getNetworkCountryIso", SharedPref.getXValue("gjISO")); // 国家iso代码
-        HookTelephony(TelePhone, loadPkgParam, "getSimCountryIso", SharedPref.getXValue("CountryCode")); // 手机卡国家
+//        HookTelephony(TelePhone, loadPkgParam, "getLine1Number", SharedPref.getXValue("PhoneNumber"));
+//        HookTelephony(TelePhone, loadPkgParam, "getSimSerialNumber", SharedPref.getXValue("SimSerial"));
+//        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperator", SharedPref.getXValue("networktor")); // 网络运营商类型
+//        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperatorName", SharedPref.getXValue("Carrier")); // 网络类型名
+//        HookTelephony(TelePhone, loadPkgParam, "getSimOperator", SharedPref.getXValue("CarrierCode")); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
+//        HookTelephony(TelePhone, loadPkgParam, "getSimOperatorName", SharedPref.getXValue("simopename")); // 运营商名字 中国联通
+//        HookTelephony(TelePhone, loadPkgParam, "getSubscriberId", SharedPref.getXValue("IMSI"));
+//
+//        // FIXME: 2018/3/20
+////        HookTelephony(TelePhone, loadPkgParam, "getDeviceSoftwareVersion", SharedPref.getXValue("deviceversion"));// 返系统版本
+//        HookTelephony(TelePhone, loadPkgParam, "getNetworkCountryIso", SharedPref.getXValue("gjISO")); // 国家iso代码
+//        HookTelephony(TelePhone, loadPkgParam, "getSimCountryIso", SharedPref.getXValue("CountryCode")); // 手机卡国家
 
 
         /**
@@ -275,52 +296,52 @@ public class Phone {
          * HSPAP   3G HSPAP 比 HSDPA 快些
          *
          */
-        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getNetworkType", new XC_MethodHook() {
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                //      网络类型
-                param.setResult(SharedPref.getintXValue("networkType"));
-                XposedBridge.log("getNetworkType");
-            }
-        });
-
-
-        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getPhoneType", new XC_MethodHook() {
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                param.setResult(SharedPref.getintXValue("phonetype"));
-                XposedBridge.log("getPhoneType");
-            }
-        });
-
-        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getSimState", new XC_MethodHook() {
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                param.setResult(SharedPref.getintXValue("SimState"));
-                XposedBridge.log("getSimState");
-            }
-        });
-        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "hasIccCard", new XC_MethodHook() {
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                param.setResult(true);
-                XposedBridge.log("hasIccCard");
-            }
-        });
+//        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getNetworkType", new XC_MethodHook() {
+//
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//                //      网络类型
+//                param.setResult(SharedPref.getintXValue("networkType"));
+//                XposedBridge.log("getNetworkType");
+//            }
+//        });
+//
+//
+//        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getPhoneType", new XC_MethodHook() {
+//
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//
+//                param.setResult(SharedPref.getintXValue("phonetype"));
+//                XposedBridge.log("getPhoneType");
+//            }
+//        });
+//
+//        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getSimState", new XC_MethodHook() {
+//
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//
+//                param.setResult(SharedPref.getintXValue("SimState"));
+//                XposedBridge.log("getSimState");
+//            }
+//        });
+//        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "hasIccCard", new XC_MethodHook() {
+//
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//                param.setResult(true);
+//                XposedBridge.log("hasIccCard");
+//            }
+//        });
 
         XposedHelpers.findAndHookMethod(Settings.Secure.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID);
 
-        XposedHelpers.findAndHookMethod(Settings.System.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID);
+        XposedHelpers.findAndHookMethod(Settings.System.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID_2);
     }
 
     private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam, final String funcName, final String value) {
@@ -344,10 +365,31 @@ public class Phone {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             super.beforeHookedMethod(param);
+            String androidID = "cb810cec4ef363b1";//SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
             if (param.args.length >= 2 && param.args[1].equals(Settings.Secure.ANDROID_ID)) {
-                param.setResult(SharedPref.getXValue("AndroidID"));
+                param.setResult(androidID);
             }
-            XposedBridge.log("hook_androidId:" + SharedPref.getXValue("AndroidID"));
+            XposedBridge.log("Settings.Secure.class hook_androidId:" + androidID);
+        }
+
+        @Override
+        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            super.afterHookedMethod(param);
+//            if (param.args.length >= 2 && param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+//                param.setResult(SharedPref.getXValue("AndroidID"));
+//            }
+        }
+    };
+
+    private XC_MethodHook hookID_2 = new XC_MethodHook() {
+        @Override
+        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            super.beforeHookedMethod(param);
+            String androidID ="cb810cec4ef363b1";// SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
+            if (param.args.length >= 2 && param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+                param.setResult(androidID);
+            }
+            XposedBridge.log("Settings.System.class hook_androidId:" + androidID);
         }
 
         @Override

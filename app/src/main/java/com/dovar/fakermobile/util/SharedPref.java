@@ -2,7 +2,6 @@ package com.dovar.fakermobile.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import de.robv.android.xposed.XSharedPreferences;
 
@@ -13,7 +12,7 @@ public class SharedPref {
 
     public SharedPref(Context appContext) {
         shareContext = appContext;
-        mySharedPref = shareContext.getSharedPreferences(Common.PREFS_FILE, Context.MODE_PRIVATE);
+        mySharedPref = shareContext.getSharedPreferences(Common.PREFS_FILE, 1);
     }
 
     public void setSharedPref(String key, String value) {
@@ -64,7 +63,7 @@ public class SharedPref {
         try {
             value = getMyXSharedPref().getInt(key, 0);
         } catch (Exception e) {
-            Log.d("hwz", "getSharedPref ERROR: " + e.getMessage());
+            System.out.println("getSharedPref ERROR: " + e.getMessage());
         }
         return value;
     }
