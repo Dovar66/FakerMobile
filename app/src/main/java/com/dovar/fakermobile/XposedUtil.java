@@ -29,8 +29,7 @@ public class XposedUtil implements IXposedHookLoadPackage {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
         if (mLoadPackageParam.packageName.equals("de.robv.android.xposed")) return;
-        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
-            PoseHelper008.initPoseHelper();
+        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp") || mLoadPackageParam.packageName.equals("com.dovar.fakermobile")) {
 
 //            initPackageManager(mLoadPackageParam);
 

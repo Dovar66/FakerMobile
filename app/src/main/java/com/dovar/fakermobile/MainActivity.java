@@ -1,13 +1,20 @@
 package com.dovar.fakermobile;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.Size;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -15,12 +22,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.dovar.fakermobile.util.PoseHelper008;
 import com.dovar.fakermobile.util.SharedPref;
 
+import java.util.HashMap;
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
     EditText et_imei;
     EditText et_android_id;
 
-    public static String IMEI = "";
-    public static String AndroidID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +53,13 @@ public class MainActivity extends AppCompatActivity {
         String imei_et = et_imei.getText().toString();
         String android_id_et = et_android_id.getText().toString();
 
-      /*  String text = "";
+        String text = "";
         int index = new Random().nextInt(SimulateDataTemp.imeiStore.size());
         HashMap<String, String> data = SimulateDataTemp.imeiStore.get(index);
         SharedPref mySP = new SharedPref(getApplicationContext());
         mySP.setSharedPref("brand", data.get("brand"));
         mySP.setSharedPref("model", data.get("model"));
         String imei = SimulateDataTemp.getRandomProp("IMEI");
-//        if (!TextUtils.isEmpty(imei_et)) {
-//            imei = imei_et;
-//        }
-        IMEI = imei;
         mySP.setSharedPref("IMEI", imei);
         String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
@@ -113,48 +117,41 @@ public class MainActivity extends AppCompatActivity {
 //        text += tm.getNetworkType();
         String androidId = SimulateDataTemp.getRandomProp("ANDROID_ID");
 
-        AndroidID = androidId;
         mySP.setSharedPref("AndroidID", androidId); //  android id
         mySP.setSharedPref("IMSI", "460017932859596");
 
         mySP.setSharedPref("WifiName", SimulateDataTemp.getRandomProp("SSID"));
         mySP.setSharedPref("WifiMAC", SimulateDataTemp.getRandomProp("MAC")); // WIF mac地址
         text += androidId;
-        ((TextView) findViewById(R.id.tv)).setText(text);*/
+        ((TextView) findViewById(R.id.tv)).setText(text);
 
         if (!TextUtils.isEmpty(imei_et)) {
-            saveToSp("IMEI", imei_et);
+            imei = imei_et;
         }
 
         if (!TextUtils.isEmpty(android_id_et)) {
-            saveToSp("AndroidID", android_id_et);
+            androidId = android_id_et;
         }
 
         JSONObject jso = new JSONObject();
-        jso.put("IMEI", imei_et);
-        jso.put("AndroidID", android_id_et);
+        jso.put("IMEI", imei);
+        jso.put("AndroidID", androidId);
         PoseHelper008.saveDataToFile(JSON.toJSONString(jso));
+        getIMEI(this);
     }
 
-    static String name = "deviceInfo_dovar";
-
-    static SharedPreferences sp;
-
-    public void saveToSp(String key, String content) {
-        if (sp == null) {
-            sp = getSharedPreferences(name, Context.MODE_WORLD_READABLE);
+    public void getIMEI(Context context) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
-        SharedPreferences.Editor et = sp.edit();
-        et.putString(key, content);
-        et.apply();
-    }
-
-    public static String getFromSp(String key) {
-        String content = sp.getString(key, "");
-        if (TextUtils.isEmpty(content)) {
-            Log.d("hwz", "getFromSp: null " + key);
-        }
-        return content;
+        ((TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE)).getDeviceId();
     }
 
     private void Save() {
