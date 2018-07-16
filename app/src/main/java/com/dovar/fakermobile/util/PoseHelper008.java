@@ -8,10 +8,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+
+import de.robv.android.xposed.XposedBridge;
 
 /**
  * Created by heweizong on 2018/3/21.
@@ -36,20 +37,13 @@ public class PoseHelper008 {
             mFile.mkdir();
         }
         File mFile1 = new File(Environment.getExternalStorageDirectory(), finalFolder + File.separator + fileName);
-        if (!mFile1.exists()) {
-            try {
-                mFile1.createNewFile();
-            } catch (IOException mE) {
-                mE.printStackTrace();
-            }
-        }
-
         try {
+            if (!mFile1.exists()) {
+                mFile1.createNewFile();
+            }
             FileOutputStream fos = new FileOutputStream(mFile1);
             fos.write(content.getBytes("UTF-8"));
             fos.close();
-        } catch (FileNotFoundException mE) {
-            mE.printStackTrace();
         } catch (IOException mE) {
             mE.printStackTrace();
         }
@@ -68,13 +62,17 @@ public class PoseHelper008 {
                 String str = "";
                 do {
                     str = bfr.readLine();
-                    content = content + str + "\n";
+                    if (str != null) {
+                        content = content + str + "\n";
+                    }
                 } while (str != null);
                 bfr.close();
             } catch (IOException mE) {
                 mE.printStackTrace();
             }
         }
-        return content;
+
+        XposedBridge.log("getDataFromFile: " + content);
+        return content.trim();
     }
 }

@@ -28,10 +28,11 @@ public class XposedUtil implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam mLoadPackageParam) throws Throwable {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
-        PoseHelper008.initPoseHelper();
         if (mLoadPackageParam.packageName.equals("de.robv.android.xposed")) return;
         if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
-            initPackageManager(mLoadPackageParam);
+            PoseHelper008.initPoseHelper();
+
+//            initPackageManager(mLoadPackageParam);
 
 //            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
 //            new RootCloak().handleLoadPackage(mLoadPackageParam);
