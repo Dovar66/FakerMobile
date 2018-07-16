@@ -216,7 +216,8 @@ public class Phone {
             XposedHelpers.findAndHookMethod(TelephonyManager.class.getName(), loadPkgParam.classLoader, "getDeviceId", new XC_MethodReplacement(XCallback.PRIORITY_LOWEST) {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
-                    String imei ="865163028177442";// SharedPref.getXValue("IMEI");//SimulateDataTemp.getRandomProp("IMEI");
+                    PoseHelper008.initPoseHelper();
+                    String imei = PoseHelper008.valueMap.getString("IMEI");//MainActivity.getFromSp("IMEI");// SharedPref.getXValue("IMEI");//SimulateDataTemp.getRandomProp("IMEI");
                     XposedBridge.log(" TelephonyManager.IMEI_1" + imei);
 
                     return imei;
@@ -268,13 +269,15 @@ public class Phone {
 //        HookTelephony(TelePhone, loadPkgParam, "getSimSerialNumber", SharedPref.getXValue("SimSerial"));
 //        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperator", SharedPref.getXValue("networktor")); // 网络运营商类型
 //        HookTelephony(TelePhone, loadPkgParam, "getNetworkOperatorName", SharedPref.getXValue("Carrier")); // 网络类型名
-//        HookTelephony(TelePhone, loadPkgParam, "getSimOperator", SharedPref.getXValue("CarrierCode")); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
-//        HookTelephony(TelePhone, loadPkgParam, "getSimOperatorName", SharedPref.getXValue("simopename")); // 运营商名字 中国联通
+
 //        HookTelephony(TelePhone, loadPkgParam, "getSubscriberId", SharedPref.getXValue("IMSI"));
 //
 //        // FIXME: 2018/3/20
 ////        HookTelephony(TelePhone, loadPkgParam, "getDeviceSoftwareVersion", SharedPref.getXValue("deviceversion"));// 返系统版本
 //        HookTelephony(TelePhone, loadPkgParam, "getNetworkCountryIso", SharedPref.getXValue("gjISO")); // 国家iso代码
+
+//        HookTelephony(TelePhone, loadPkgParam, "getSimOperator", SharedPref.getXValue("CarrierCode")); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
+//        HookTelephony(TelePhone, loadPkgParam, "getSimOperatorName", SharedPref.getXValue("simopename")); // 运营商名字 中国联通
 //        HookTelephony(TelePhone, loadPkgParam, "getSimCountryIso", SharedPref.getXValue("CountryCode")); // 手机卡国家
 
 
@@ -365,11 +368,11 @@ public class Phone {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             super.beforeHookedMethod(param);
-            String androidID = "cb810cec4ef363b1";//SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
+            String androidID = PoseHelper008.valueMap.getString("AndroidID");//MainActivity.getFromSp("AndroidID");//SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
             if (param.args.length >= 2 && param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+                XposedBridge.log("Settings.Secure.class hook_androidId:" + androidID);
                 param.setResult(androidID);
             }
-            XposedBridge.log("Settings.Secure.class hook_androidId:" + androidID);
         }
 
         @Override
@@ -385,11 +388,11 @@ public class Phone {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             super.beforeHookedMethod(param);
-            String androidID ="cb810cec4ef363b1";// SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
+            String androidID = PoseHelper008.valueMap.getString("AndroidID");//MainActivity.getFromSp("AndroidID");// SharedPref.getXValue("AndroidID");//SimulateDataTemp.getRandomProp("ANDROID_ID");
             if (param.args.length >= 2 && param.args[1].equals(Settings.Secure.ANDROID_ID)) {
+                XposedBridge.log("Settings.System.class hook_androidId:" + androidID);
                 param.setResult(androidID);
             }
-            XposedBridge.log("Settings.System.class hook_androidId:" + androidID);
         }
 
         @Override

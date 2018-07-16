@@ -1,11 +1,13 @@
 package com.dovar.fakermobile;
 
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 
 import com.dovar.fakermobile.util.Common;
 import com.dovar.fakermobile.util.Phone;
+import com.dovar.fakermobile.util.PoseHelper008;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +28,11 @@ public class XposedUtil implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam mLoadPackageParam) throws Throwable {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
+        PoseHelper008.initPoseHelper();
         if (mLoadPackageParam.packageName.equals("de.robv.android.xposed")) return;
         if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
+            initPackageManager(mLoadPackageParam);
+
 //            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
 //            new RootCloak().handleLoadPackage(mLoadPackageParam);
 //            new XBuild(mLoadPackageParam);
@@ -142,8 +147,6 @@ public class XposedUtil implements IXposedHookLoadPackage {
 //                param.setResult();
 //            }
 //        };
-
-        initPackageManager(mLoadPackageParam);
     }
 
 
@@ -161,7 +164,7 @@ public class XposedUtil implements IXposedHookLoadPackage {
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
 //                    param.setResult(null);
-                    XposedBridge.log("getRecentTasks");
+                    XposedBridge.log("Hooked getRecentTasks");
 
                     List<ActivityManager.RecentTaskInfo> services = (List<ActivityManager.RecentTaskInfo>) param.getResult(); // 从方法调用获取结果
                     Iterator<ActivityManager.RecentTaskInfo> iter = services.iterator();
@@ -171,10 +174,16 @@ public class XposedUtil implements IXposedHookLoadPackage {
                     // 通过RunningTaskInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
                     while (iter.hasNext()) {
                         tempTask = iter.next();
-                        tempBaseActivity = tempTask.origActivity.getPackageName(); // Need to make it a string for comparison
-                        if (tempBaseActivity != null && stringContainsFromSet(tempBaseActivity, keywordSet)) {
-                            XposedBridge.log(tempBaseActivity);
-                            iter.remove();
+                        if (tempTask != null) {
+                            ComponentName name = tempTask.origActivity;
+                            if (name != null) {
+                                tempBaseActivity = name.getPackageName(); // Need to make it a string for comparison
+                                XposedBridge.log("recentTask:" + tempBaseActivity);
+                                if (tempBaseActivity != null && stringContainsFromSet(tempBaseActivity, keywordSet)) {
+                                    XposedBridge.log("找到并移除了RecentTask：" + tempBaseActivity);
+                                    iter.remove();
+                                }
+                            }
                         }
                     }
 
@@ -186,12 +195,12 @@ public class XposedUtil implements IXposedHookLoadPackage {
         }
 
         try {
-            XposedHelpers.findAndHookMethod(ActivityManager.class.getName(), lpparam.classLoader, "getRunningAppProcesses", 0, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(ActivityManager.class.getName(), lpparam.classLoader, "getRunningAppProcesses", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
 //                    param.setResult(null);
-                    XposedBridge.log("getRunningAppProcesses");
+                    XposedBridge.log("Hooked getRunningAppProcesses");
 
                     List<ActivityManager.RunningAppProcessInfo> processes = (List<ActivityManager.RunningAppProcessInfo>) param.getResult(); // Get the results from the method call
                     Iterator<ActivityManager.RunningAppProcessInfo> iter = processes.iterator();
@@ -201,10 +210,13 @@ public class XposedUtil implements IXposedHookLoadPackage {
                     // 通过RunningAppProcessInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
                     while (iter.hasNext()) {
                         tempProcess = iter.next();
-                        tempProcessName = tempProcess.processName;
-                        if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
-                            XposedBridge.log(tempProcessName);
-                            iter.remove();
+                        if (tempProcess != null) {
+                            tempProcessName = tempProcess.processName;
+                            XposedBridge.log("Process:" + tempProcessName);
+                            if (tempProcessName != null && stringContainsFromSet(tempProcessName, keywordSet)) {
+                                XposedBridge.log("找到并移除了Process：" + tempProcessName);
+                                iter.remove();
+                            }
                         }
                     }
 
@@ -223,7 +235,7 @@ public class XposedUtil implements IXposedHookLoadPackage {
                    *匹配关键字集中的条目的结果将被隐藏。
          */
         XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", lpparam.classLoader, "getInstalledApplications", Integer.TYPE.getName(), new XC_MethodHook() {
-            @SuppressWarnings("unchecked")
+
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable { // Hook after getIntalledApplications is called
                 XposedBridge.log("Hooked getInstalledApplications");
@@ -236,10 +248,13 @@ public class XposedUtil implements IXposedHookLoadPackage {
                 // 通过ApplicationInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
                 while (iter.hasNext()) {
                     tempAppInfo = iter.next();
-                    tempPackageName = tempAppInfo.packageName;
-                    if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
-                        iter.remove();
-                        XposedBridge.log("找到并隐藏包：" + tempPackageName);
+                    if (tempAppInfo != null) {
+                        tempPackageName = tempAppInfo.packageName;
+                        XposedBridge.log("ApplicationInfo：" + tempPackageName);
+                        if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
+                            XposedBridge.log("找到并隐藏ApplicationInfo：" + tempPackageName);
+                            iter.remove();
+                        }
                     }
                 }
 
@@ -253,7 +268,7 @@ public class XposedUtil implements IXposedHookLoadPackage {
                匹配关键字集中的条目的结果将被隐藏。
          */
         XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", lpparam.classLoader, "getInstalledPackages", Integer.TYPE.getName(), new XC_MethodHook() {
-            @SuppressWarnings("unchecked")
+
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable { // Hook after getInstalledPackages is called
                 XposedBridge.log("Hooked getInstalledPackages");
@@ -266,10 +281,14 @@ public class XposedUtil implements IXposedHookLoadPackage {
                 // 通过PackageInfo列表迭代，并删除与keywordSet中的关键字匹配的任何提及
                 while (iter.hasNext()) {
                     tempPackageInfo = iter.next();
-                    tempPackageName = tempPackageInfo.packageName;
-                    if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
-                        iter.remove();
-                        XposedBridge.log("找到并隐藏包：" + tempPackageName);
+                    if (tempPackageInfo != null) {
+                        tempPackageName = tempPackageInfo.packageName;
+                        //de.robv.android.xposed.installer
+                        XposedBridge.log("PackageInfo：" + tempPackageName);
+                        if (tempPackageName != null && stringContainsFromSet(tempPackageName, keywordSet)) {
+                            XposedBridge.log("找到并隐藏PackageInfo：" + tempPackageName);
+                            iter.remove();
+                        }
                     }
                 }
 
@@ -277,17 +296,17 @@ public class XposedUtil implements IXposedHookLoadPackage {
             }
         });
 
-        /*  *//**
+        /**
          在PackageManager中挂钩getPackageInfo。
                    *应用程序可以以这种方式检查其他包。 我们在getPackageInfo被调用之前钩。
                    *如果正在查看的包与keywordSet中的条目匹配，则替换假包名称。
                    *这将最终抛出一个PackageManager.NameNotFoundException。
-         *//*
+         */
         XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", lpparam.classLoader, "getPackageInfo", String.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log("Hooked getPackageInfo");
                 String name = (String) param.args[0];
+                XposedBridge.log("Hooked getPackageInfo:" + name);
 
                 if (name != null && stringContainsFromSet(name, keywordSet)) {
                     param.args[0] = FAKE_PACKAGE; // 设置假包名称
@@ -296,16 +315,14 @@ public class XposedUtil implements IXposedHookLoadPackage {
             }
         });
 
-        *//**
-         Hooks在PackageManager中获取getApplicationInfo。
+        /**Hooks在PackageManager中获取getApplicationInfo。
                    *应用程序可以通过这种方式检查其他应用程序。 我们在getApplicationInfo被调用之前钩。
                    *如果正在查看的应用程序与keywordSet中的条目匹配，则替换假冒的应用程序名称。
                    *这将最终抛出一个PackageManager.NameNotFoundException。
-         *//*
+         */
         XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", lpparam.classLoader, "getApplicationInfo", String.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-
                 String name = (String) param.args[0];
                 XposedBridge.log("Hooked getApplicationInfo : " + name);
 
@@ -314,7 +331,7 @@ public class XposedUtil implements IXposedHookLoadPackage {
                     XposedBridge.log("发现和隐藏应用程序： " + name);
                 }
             }
-        });*/
+        });
     }
 
     /**
