@@ -20,7 +20,7 @@ import de.robv.android.xposed.XposedBridge;
 
 public class PoseHelper008 {
     public static JSONObject valueMap = new JSONObject();
-    public static String finalFolder = ".system";
+    public static String finalFolder = "xx";
     public static final String fileName = "xposeDevice.txt";
 
     static {

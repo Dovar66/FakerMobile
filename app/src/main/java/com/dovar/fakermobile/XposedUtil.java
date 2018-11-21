@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import com.dovar.fakermobile.util.Common;
 import com.dovar.fakermobile.util.Phone;
 import com.dovar.fakermobile.util.PoseHelper008;
+import com.dovar.fakermobile.util.XBuild;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,14 +30,14 @@ public class XposedUtil implements IXposedHookLoadPackage {
 //        XposedBridge.log("=========Loaded app: " + mLoadPackageParam.packageName);
 
         if (mLoadPackageParam.packageName.equals("de.robv.android.xposed")) return;
-        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
+        if (mLoadPackageParam.packageName.equals("com.touchtv.touchtv")||mLoadPackageParam.packageName.equals("com.dovar.webdemo") || mLoadPackageParam.packageName.equals("com.dovar.testxp")) {
             PoseHelper008.initPoseHelper();
 
 //            initPackageManager(mLoadPackageParam);
 
 //            new Hook().HookTest(mLoadPackageParam);//使更新模块后不用重启手机就能生效
 //            new RootCloak().handleLoadPackage(mLoadPackageParam);
-//            new XBuild(mLoadPackageParam);
+            new XBuild(mLoadPackageParam);
             new Phone(mLoadPackageParam);
 //            new Resolution().Display(mLoadPackageParam);  //屏幕
 //            GPShook.HookAndChange(mLoadPackageParam.classLoader, SharedPref.getfloatXValue("lat"),SharedPref.getfloatXValue("log"));

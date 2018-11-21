@@ -3,11 +3,13 @@ package com.dovar.fakermobile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Size;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -15,12 +17,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.dovar.fakermobile.util.PoseHelper008;
 import com.dovar.fakermobile.util.SharedPref;
 
+import java.util.HashMap;
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
     EditText et_imei;
     EditText et_android_id;
-
-    public static String IMEI = "";
-    public static String AndroidID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +47,14 @@ public class MainActivity extends AppCompatActivity {
         String imei_et = et_imei.getText().toString();
         String android_id_et = et_android_id.getText().toString();
 
-      /*  String text = "";
+        String text = "";
         int index = new Random().nextInt(SimulateDataTemp.imeiStore.size());
         HashMap<String, String> data = SimulateDataTemp.imeiStore.get(index);
-        SharedPref mySP = new SharedPref(getApplicationContext());
-        mySP.setSharedPref("brand", data.get("brand"));
-        mySP.setSharedPref("model", data.get("model"));
         String imei = SimulateDataTemp.getRandomProp("IMEI");
-//        if (!TextUtils.isEmpty(imei_et)) {
-//            imei = imei_et;
-//        }
-        IMEI = imei;
-        mySP.setSharedPref("IMEI", imei);
-        String display = data.get("display");
+        if (!TextUtils.isEmpty(imei_et)) {
+            imei = imei_et;
+        }
+       /* String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
             String[] size = display.split("\\*");
             try {
@@ -68,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception me) {
                 me.printStackTrace();
             }
-        }
+        }*/
 
         text += data.get("brand") + "\n";
         text += data.get("model") + "\n";
@@ -76,30 +73,28 @@ public class MainActivity extends AppCompatActivity {
         text += data.get("display") + "\n";
 
         String api = SimulateDataTemp.randomSdkLevel();
-        mySP.setSharedPref("API", api); //系统的API级别 SDK
-        mySP.setSharedPref("AndroidVer", SimulateDataTemp.getSdkVersion(api));
 
         text += api + "\n";
         text += SimulateDataTemp.getSdkVersion(api) + "\n";
 
         @Size(3) String[] simData = SimulateDataTemp.getSimData();
-        mySP.setSharedPref("Carrier", simData[0]);// 网络类型名
+     /*   mySP.setSharedPref("Carrier", simData[0]);// 网络类型名
         mySP.setSharedPref("simopename", simData[0]);// 运营商名字
         mySP.setSharedPref("SimSerial", simData[1]);//手机卡序列号
         mySP.setSharedPref("networktor", simData[2]); // 网络运营商类型
-        mySP.setSharedPref("CarrierCode", simData[2]); // 运营商
+        mySP.setSharedPref("CarrierCode", simData[2]); // 运营商*/
 
         text += simData[0] + "\n";
         text += simData[1] + "\n";
         text += simData[2] + "\n";
 
         String phoneNum = SimulateDataTemp.getPhoneNumber(simData[2]);
-        mySP.setSharedPref("PhoneNumber", phoneNum); // 手机号码
+//        mySP.setSharedPref("PhoneNumber", phoneNum); // 手机号码
         text += phoneNum + "\n";
 
         @Size(2) int[] networkType = SimulateDataTemp.getNetworkType(simData[0]);
-        mySP.setintSharedPref("getType", networkType[0]); // 联网方式
-        mySP.setintSharedPref("networkType", networkType[1]);//网络类型
+//        mySP.setintSharedPref("getType", networkType[0]); // 联网方式
+//        mySP.setintSharedPref("networkType", networkType[1]);//网络类型
 
         text += networkType[0] + "\n";
         text += networkType[1] + "\n";
@@ -112,27 +107,26 @@ public class MainActivity extends AppCompatActivity {
 //        text += tm.getSimSerialNumber() + "\n";
 //        text += tm.getNetworkType();
         String androidId = SimulateDataTemp.getRandomProp("ANDROID_ID");
-
-        AndroidID = androidId;
-        mySP.setSharedPref("AndroidID", androidId); //  android id
-        mySP.setSharedPref("IMSI", "460017932859596");
-
-        mySP.setSharedPref("WifiName", SimulateDataTemp.getRandomProp("SSID"));
-        mySP.setSharedPref("WifiMAC", SimulateDataTemp.getRandomProp("MAC")); // WIF mac地址
-        text += androidId;
-        ((TextView) findViewById(R.id.tv)).setText(text);*/
-
-        if (!TextUtils.isEmpty(imei_et)) {
-            saveToSp("IMEI", imei_et);
-        }
-
         if (!TextUtils.isEmpty(android_id_et)) {
-            saveToSp("AndroidID", android_id_et);
+            androidId = android_id_et;
         }
+
+        text += androidId;
+        ((TextView) findViewById(R.id.tv)).setText(text);
 
         JSONObject jso = new JSONObject();
-        jso.put("IMEI", imei_et);
-        jso.put("AndroidID", android_id_et);
+        jso.put("IMEI", imei);
+        jso.put("AndroidID", androidId);
+        jso.put("WifiMAC",SimulateDataTemp.getRandomProp("MAC"));
+        jso.put("model", data.get("model"));
+        jso.put("board","msm8916");
+        jso.put("brand", data.get("brand"));
+        jso.put("Manufacture","OPPO");
+        jso.put("ID","KTU84P");
+        jso.put("device","hwG750-T01");
+        jso.put("serial","aee5060e");
+        jso.put("API",api);
+        jso.put("AndroidVer",SimulateDataTemp.getSdkVersion(api));
         PoseHelper008.saveDataToFile(JSON.toJSONString(jso));
     }
 

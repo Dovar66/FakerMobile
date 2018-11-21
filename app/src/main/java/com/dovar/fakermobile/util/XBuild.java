@@ -84,6 +84,21 @@ public class XBuild {
 
 
     public void BuildProp(XC_LoadPackage.LoadPackageParam loadPkgParam) {
+        // TODO: 2018/11/21
+       /* Build.VERSION.RELEASE
+        Build.MODEL
+        Build.BOARD
+        Build.BRAND
+        Build.TIME
+        Build.MANUFACTURER
+        Build.ID
+        Build.DEVICE
+        Build.SERIAL
+        Build.VERSION.SDK_INT*/
+
+       //cpu
+
+
         //systemProperties hook
         XposedHelpers.findAndHookMethod("android.os.SystemProperties", loadPkgParam.classLoader, "get", String.class, String.class, new XC_MethodHook() {
             @Override
@@ -91,19 +106,24 @@ public class XBuild {
                 String methodName = param.method.getName();
                 if (methodName.startsWith("get")) {
                     try {
-                        XposedHelpers.setStaticObjectField(Build.class, "BRAND", SharedPref.getXValue("brand"));
-                        XposedHelpers.setStaticObjectField(Build.class, "MODEL", SharedPref.getXValue("model"));
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", SharedPref.getXValue("API"));
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", SharedPref.getXValue("AndroidVer"));
-//                        XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
+                        XposedHelpers.setStaticObjectField(Build.class, "MODEL", PoseHelper008.valueMap.getString("model"));
+                        XposedHelpers.findField(Build.class, "BOARD").set(null, PoseHelper008.valueMap.getString("board"));
+                        XposedHelpers.setStaticObjectField(Build.class, "BRAND", PoseHelper008.valueMap.getString("brand"));
+//                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build
+                        XposedHelpers.findField(Build.class, "MANUFACTURER").set(null, PoseHelper008.valueMap.getString("Manufacture"));
+                        XposedHelpers.findField(Build.class, "ID").set(null, PoseHelper008.valueMap.getString("ID"));
+                        XposedHelpers.findField(Build.class, "DEVICE").set(null, PoseHelper008.valueMap.getString("device"));
+                        XposedHelpers.setStaticObjectField(Build.class, "SERIAL", PoseHelper008.valueMap.getString("serial")); // 串口序列号
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", PoseHelper008.valueMap.getString("API"));
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", PoseHelper008.valueMap.getString("AndroidVer"));
+//                        XposedHelpers.findField(Build.VERSION.class, "SDK_INT").set(null, pre.getInt("sdkint", 6));
+
+
 //                        XposedHelpers.findField(Build.class, "CPU_ABI").set(null, SharedPref.getXValue("ABI"));
 //                        XposedHelpers.findField(Build.class, "CPU_ABI2").set(null, SharedPref.getXValue("ABI2"));
-//                        XposedHelpers.findField(Build.class, "DEVICE").set(null, SharedPref.getXValue("device"));
 //                        XposedHelpers.findField(Build.class, "DISPLAY").set(null, SharedPref.getXValue("display"));
 //                        XposedHelpers.findField(Build.class, "FINGERPRINT").set(null, SharedPref.getXValue("fingerprint"));
 //                        XposedHelpers.findField(Build.class, "HARDWARE").set(null, SharedPref.getXValue("NAME"));
-//                        XposedHelpers.findField(Build.class, "ID").set(null, SharedPref.getXValue("ID"));
-//                        XposedHelpers.findField(Build.class, "MANUFACTURER").set(null, SharedPref.getXValue("Manufacture"));
 //                        XposedHelpers.findField(Build.class, "PRODUCT").set(null, SharedPref.getXValue("product"));
 //                        XposedHelpers.findField(Build.class, "BOOTLOADER").set(null, SharedPref.getXValue("booltloader")); //主板引导程序
 //                        XposedHelpers.findField(Build.class, "HOST").set(null, SharedPref.getXValue("host"));  // 设备主机地址
@@ -112,9 +132,7 @@ public class XBuild {
 //                        XposedHelpers.findField(Build.VERSION.class, "INCREMENTAL").set(null, SharedPref.getXValue("incrementalincremental")); //源码控制版本号
 
 //                        XposedHelpers.findField(android.os.Build.VERSION.class, "CODENAME").set(null, "REL"); //写死就行 这个值为固定
-//                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build
 
-//                        XposedHelpers.findField(Build.VERSION.class, "SDK_INT").set(null, pre.getInt("sdkint", 6));
 //                        XposedHelpers.setStaticObjectField(android.os.Build.class, "RADIO", pre.getString("radio", null));
                     } catch (Exception e) {
                         XposedBridge.log(" BuildProp 错误: " + e.getMessage());
@@ -152,31 +170,17 @@ public class XBuild {
                 if (methodName.startsWith("get")) {
                     XposedBridge.log("getDeviceInfo_string");
                     try {
-                        XposedHelpers.setStaticObjectField(Build.class, "BRAND", SharedPref.getXValue("brand"));
-                        XposedHelpers.setStaticObjectField(Build.class, "MODEL", SharedPref.getXValue("model"));
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", SharedPref.getXValue("API"));
-                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", SharedPref.getXValue("AndroidVer"));
-                       /* XposedHelpers.findField(Build.class, "BOARD").set(null, SharedPref.getXValue("board"));
-                        XposedHelpers.findField(Build.class, "CPU_ABI").set(null, SharedPref.getXValue("ABI"));
-                        XposedHelpers.findField(Build.class, "CPU_ABI2").set(null, SharedPref.getXValue("ABI2"));
-                        XposedHelpers.findField(Build.class, "DEVICE").set(null, SharedPref.getXValue("device"));
-                        XposedHelpers.findField(Build.class, "DISPLAY").set(null, SharedPref.getXValue("display"));
-                        XposedHelpers.findField(Build.class, "FINGERPRINT").set(null, SharedPref.getXValue("fingerprint"));
-                        XposedHelpers.findField(Build.class, "HARDWARE").set(null, SharedPref.getXValue("NAME"));
-                        XposedHelpers.findField(Build.class, "ID").set(null, SharedPref.getXValue("ID"));
-                        XposedHelpers.findField(Build.class, "MANUFACTURER").set(null, SharedPref.getXValue("Manufacture"));
-                        XposedHelpers.findField(Build.class, "PRODUCT").set(null, SharedPref.getXValue("product"));
-                        XposedHelpers.findField(Build.class, "BOOTLOADER").set(null, SharedPref.getXValue("booltloader")); //主板引导程序
-                        XposedHelpers.findField(Build.class, "HOST").set(null, SharedPref.getXValue("host"));  // 设备主机地址
-                        XposedHelpers.findField(Build.class, "TAGS").set(null, SharedPref.getXValue("build_tags"));  //描述build的标签
-                        XposedHelpers.findField(Build.class, "TYPE").set(null, SharedPref.getXValue("shenbei_type")); //设备版本类型
-                        XposedHelpers.findField(Build.VERSION.class, "INCREMENTAL").set(null, SharedPref.getXValue("incrementalincremental")); //源码控制版本号
-
-                        XposedHelpers.findField(android.os.Build.VERSION.class, "CODENAME").set(null, "REL"); //写死就行 这个值为固定
-                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build*/
-
+                        XposedHelpers.setStaticObjectField(Build.class, "MODEL", PoseHelper008.valueMap.getString("model"));
+                        XposedHelpers.findField(Build.class, "BOARD").set(null, PoseHelper008.valueMap.getString("board"));
+                        XposedHelpers.setStaticObjectField(Build.class, "BRAND", PoseHelper008.valueMap.getString("brand"));
+//                        XposedHelpers.findField(Build.class, "TIME").set(null, SharedPref.getintXValue("time"));  // 固件时间build
+                        XposedHelpers.findField(Build.class, "MANUFACTURER").set(null, PoseHelper008.valueMap.getString("Manufacture"));
+                        XposedHelpers.findField(Build.class, "ID").set(null, PoseHelper008.valueMap.getString("ID"));
+                        XposedHelpers.findField(Build.class, "DEVICE").set(null, PoseHelper008.valueMap.getString("device"));
+                        XposedHelpers.setStaticObjectField(Build.class, "SERIAL", PoseHelper008.valueMap.getString("serial")); // 串口序列号
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "SDK", PoseHelper008.valueMap.getString("API"));
+                        XposedHelpers.setStaticObjectField(android.os.Build.VERSION.class, "RELEASE", PoseHelper008.valueMap.getString("AndroidVer"));
 //                        XposedHelpers.findField(Build.VERSION.class, "SDK_INT").set(null, pre.getInt("sdkint", 6));
-//                        XposedHelpers.setStaticObjectField(android.os.Build.class, "RADIO", pre.getString("radio", null));
                     } catch (Exception e) {
                         XposedBridge.log(" BuildProp 错误: " + e.getMessage());
                     }
