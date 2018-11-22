@@ -1,12 +1,10 @@
 package com.dovar.fakermobile;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.app.ActivityManager;
 import android.os.Bundle;
 import android.support.annotation.Size;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dovar.fakermobile.util.PoseHelper008;
 import com.dovar.fakermobile.util.SharedPref;
 
+import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         SimulateDataTemp.init(this);
-//        Save();
     }
 
     private void updateDatas() {
@@ -117,39 +115,23 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jso = new JSONObject();
         jso.put("IMEI", imei);
         jso.put("AndroidID", androidId);
-        jso.put("WifiMAC",SimulateDataTemp.getRandomProp("MAC"));
+        jso.put("WifiMAC", SimulateDataTemp.getRandomProp("MAC"));
         jso.put("model", data.get("model"));
-        jso.put("board","msm8916");
+        jso.put("board", "msm8916");
         jso.put("brand", data.get("brand"));
-        jso.put("Manufacture","OPPO");
-        jso.put("ID","KTU84P");
-        jso.put("device","hwG750-T01");
-        jso.put("serial","aee5060e");
-        jso.put("API",api);
-        jso.put("AndroidVer",SimulateDataTemp.getSdkVersion(api));
+        jso.put("Manufacture", "OPPO");
+        jso.put("ID", "KTU84P");
+        jso.put("device", "hwG750-T01");
+        jso.put("serial", "aee5060e");
+        jso.put("API", api);
+        jso.put("AndroidVer", SimulateDataTemp.getSdkVersion(api));
         PoseHelper008.saveDataToFile(JSON.toJSONString(jso));
+
+
+        killProcess(packageName);
+        execCommand(packageName);
     }
 
-    static String name = "deviceInfo_dovar";
-
-    static SharedPreferences sp;
-
-    public void saveToSp(String key, String content) {
-        if (sp == null) {
-            sp = getSharedPreferences(name, Context.MODE_WORLD_READABLE);
-        }
-        SharedPreferences.Editor et = sp.edit();
-        et.putString(key, content);
-        et.apply();
-    }
-
-    public static String getFromSp(String key) {
-        String content = sp.getString(key, "");
-        if (TextUtils.isEmpty(content)) {
-            Log.d("hwz", "getFromSp: null " + key);
-        }
-        return content;
-    }
 
     private void Save() {
 //        TelephonyManager tele = (TelephonyManager) getSystemService("phone");
@@ -263,5 +245,29 @@ public class MainActivity extends AppCompatActivity {
 
 
         Toast.makeText(this, "保存成功", Toast.LENGTH_LONG).show();
+    }
+
+    String packageName = "com.touchtv.touchtv";
+
+    //清除应用缓存的用户数据
+    //友盟会保存数据到应用本地，其中有用于识别用户唯一性的凭据
+    public static void execCommand(String packageName) {
+        String cmd = "pm clear " + packageName;
+        try {
+            Process proc = Runtime.getRuntime().exec("su");
+            DataOutputStream osl = new DataOutputStream(proc.getOutputStream());
+            osl.writeBytes(cmd + "\n");
+            osl.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //强杀目标应用进程
+    public void killProcess(String pkn) {
+        ActivityManager am = ((ActivityManager) getSystemService(ACTIVITY_SERVICE));
+        if (am != null) {
+            am.killBackgroundProcesses(pkn);
+        }
     }
 }
