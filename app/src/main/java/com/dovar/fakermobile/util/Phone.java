@@ -351,7 +351,7 @@ public class Phone {
 
         XposedHelpers.findAndHookMethod(Settings.Secure.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID);
 
-//        XposedHelpers.findAndHookMethod(Settings.System.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID_2);
+        XposedHelpers.findAndHookMethod(Settings.System.class.getName(), loadPkgParam.classLoader, "getString", ContentResolver.class.getName(), String.class.getName(), hookID_2);
     }
 
     private void HookTelephony(String hookClass, XC_LoadPackage.LoadPackageParam loadPkgParam, final String funcName, final String value) {

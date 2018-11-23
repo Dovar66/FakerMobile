@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -601,8 +602,8 @@ public class SimulateDataTemp {
         // IMEI/MEID
         if (name.equals("IMEI")) {
             // http://en.wikipedia.org/wiki/Reporting_Body_Identifier
-            String[] rbi = new String[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "30", "33",
-                    "35", "44", "45", "49", "50", "51", "52", "53", "54", "86", "91", "98", "99" };
+            String[] rbi = new String[]{"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "30", "33",
+                    "35", "44", "45", "49", "50", "51", "52", "53", "54", "86", "91", "98", "99"};
             String imei = rbi[r.nextInt(rbi.length)];
             while (imei.length() < 14)
                 imei += Character.forDigit(r.nextInt(10), 10);
@@ -687,6 +688,68 @@ public class SimulateDataTemp {
             sum += n;
         }
         return Character.forDigit((sum * 9) % 10, 10);
+    }
+
+    /**
+     * 生成IMEI号,共15位，由TAC+FAC+SNR+CD组成，其中
+     * TAC IMEI前8位（早期功能机时代是6位），与机型和产地相关
+     * FAC 装配码，2位，仅在早期TAC码为6位的机型中存在，可以忽略
+     * SNR 生成序列号，6位，可以随机生成
+     * CD 检验码，由前14位数字根据Luhn算法计算得到
+     *
+     * @param tac IMEI前8位，与机型和产地相关
+     * @return IMEI号
+     */
+    public static String genIMEI(String imei) {
+        String tac;
+        if (imei == null) return "";
+        if (imei.length() > 8) {
+            tac = imei.substring(0, 8);
+        } else {
+            return "";
+        }
+        int rdSNR = (int) (Math.random() * 1000000);
+        String snr = String.format(Locale.US, "%06d", rdSNR);
+        StringBuffer result = new StringBuffer();
+        result.append(tac);
+        result.append(snr);
+        result.append(genCheckCode(result.toString()));
+        return result.toString();
+    }
+
+    /**
+     * 生成IMEI校验码，由前14位数字根据Luhn算法计算得到
+     *
+     * @param code IMEI前14位
+     * @return IMEI校验码
+     */
+    public static String genCheckCode(String code) {
+        int total = 0, sum1 = 0, sum2 = 0;
+        int temp = 0;
+        char[] chs = code.toCharArray();
+        for (int i = 0; i < chs.length; i++) {
+            int num = chs[i] - '0';    // ascii to num
+            /*(1)将奇数位数字相加(从1开始计数)*/
+            if (i % 2 == 0) {
+                sum1 = sum1 + num;
+            } else {
+                /*(2)将偶数位数字分别乘以2,分别计算个位数和十位数之和(从1开始计数)*/
+                temp = num * 2;
+                if (temp < 10) {
+                    sum2 = sum2 + temp;
+                } else {
+                    sum2 = sum2 + temp + 1 - 10;
+                }
+            }
+        }
+        total = sum1 + sum2;
+        /*如果得出的数个位是0则校验位为0,否则为10减去个位数 */
+        if (total % 10 == 0) {
+            return "0";
+        } else {
+            return (10 - (total % 10)) + "";
+        }
+
     }
 }
 

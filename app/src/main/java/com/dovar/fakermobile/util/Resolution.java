@@ -43,7 +43,7 @@ public class Resolution {
                 try {
                     String display = (String) PoseHelper008.valueMap.get("getMetrics");
                     if (display != null) {
-                        String[] size = display.split("x");
+                        String[] size = display.split("\\*");
                         if (size.length == 2) {
                             DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                             metrics.widthPixels = Integer.parseInt(size[0]);
@@ -72,7 +72,7 @@ public class Resolution {
                 try {
                     String display = (String) PoseHelper008.valueMap.get("getMetrics");
                     if (display != null) {
-                        String[] size = display.split("x");
+                        String[] size = display.split("\\*");
                         if (size.length == 2) {
                             Point mPoint = (Point) param.args[0];
                             mPoint.x = Integer.parseInt(size[0]);
@@ -100,7 +100,7 @@ public class Resolution {
                 try {
                     String display = (String) PoseHelper008.valueMap.get("getMetrics");
                     if (display != null) {
-                        String[] size = display.split("x");
+                        String[] size = display.split("\\*");
                         if (size.length == 2) {
                             DisplayMetrics metrics = (DisplayMetrics) param.args[0];
                             metrics.widthPixels = Integer.parseInt(size[0]);
@@ -129,7 +129,7 @@ public class Resolution {
                 try {
                     String display = (String) PoseHelper008.valueMap.get("getMetrics");
                     if (display != null) {
-                        String[] size = display.split("x");
+                        String[] size = display.split("\\*");
                         if (size.length == 2) {
                             param.setResult(Integer.parseInt(size[0]));
                         }
@@ -151,7 +151,7 @@ public class Resolution {
                 try {
                     String display = (String) PoseHelper008.valueMap.get("getMetrics");
                     if (display != null) {
-                        String[] size = display.split("x");
+                        String[] size = display.split("\\*");
                         if (size.length == 2) {
                             param.setResult(Integer.parseInt(size[1]));
                         }

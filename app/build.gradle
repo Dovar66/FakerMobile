@@ -16,6 +16,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    //设置打包生成的apk文件的名称
+    android.applicationVariants.all { variant ->
+        for (int i = 0; i < variant.outputs.size(); i++) {
+            def date = new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+08"))
+            variant.outputs.get(i).outputFile = new File("fms_${date}.apk")
+        }
+    }
 }
 
 dependencies {
@@ -24,5 +32,4 @@ dependencies {
     compile 'com.alibaba:fastjson:1.2.46'
     compile 'com.alibaba:fastjson:1.1.68.android'
     provided files('libs/XposedBridgeApi-54.jar')
-//    compile files('libs/XposedBridgeApi-54.jar')
 }

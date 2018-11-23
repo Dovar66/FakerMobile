@@ -42,28 +42,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDatas() {
+        JSONObject jso = new JSONObject();
+
         String imei_et = et_imei.getText().toString();
         String android_id_et = et_android_id.getText().toString();
 
         String text = "";
         int index = new Random().nextInt(SimulateDataTemp.imeiStore.size());
         HashMap<String, String> data = SimulateDataTemp.imeiStore.get(index);
-        String imei = SimulateDataTemp.getRandomProp("IMEI");
+        String imei = SimulateDataTemp.genIMEI(data.get("imei"));
         if (!TextUtils.isEmpty(imei_et)) {
             imei = imei_et;
         }
-       /* String display = data.get("display");
+        String display = data.get("display");
         if (!TextUtils.isEmpty(display)) {
-            String[] size = display.split("\\*");
+          /*  String[] size = display.split("\\*");
             try {
-                mySP.setintSharedPref("width", 1440);
+                jso.put("width", size[0]);
                 if (size.length > 1) {
-                    mySP.setintSharedPref("height", 2560);
+                    jso.put("height", size[1]);
                 }
             } catch (Exception me) {
                 me.printStackTrace();
-            }
-        }*/
+            }*/
+            jso.put("getMetrics", display);
+        }
 
         text += data.get("brand") + "\n";
         text += data.get("model") + "\n";
@@ -112,14 +115,13 @@ public class MainActivity extends AppCompatActivity {
         text += androidId;
         ((TextView) findViewById(R.id.tv)).setText(text);
 
-        JSONObject jso = new JSONObject();
         jso.put("IMEI", imei);
         jso.put("AndroidID", androidId);
         jso.put("WifiMAC", SimulateDataTemp.getRandomProp("MAC"));
         jso.put("model", data.get("model"));
         jso.put("board", "msm8916");
         jso.put("brand", data.get("brand"));
-        jso.put("Manufacture", "OPPO");
+        jso.put("Manufacture", data.get("brand"));
         jso.put("ID", "KTU84P");
         jso.put("device", "hwG750-T01");
         jso.put("serial", "aee5060e");
@@ -128,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
         PoseHelper008.saveDataToFile(JSON.toJSONString(jso));
 
 
-        killProcess(packageName);
-        execCommand(packageName);
+        killProcess(webDemo);
+        execCommand(webDemo);
     }
 
 
@@ -247,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "保存成功", Toast.LENGTH_LONG).show();
     }
 
-    String packageName = "com.touchtv.touchtv";
+    String webDemo = "com.dovar.webdemo";
 
     //清除应用缓存的用户数据
     //友盟会保存数据到应用本地，其中有用于识别用户唯一性的凭据
