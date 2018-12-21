@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -20,8 +21,10 @@ import com.dovar.fakermobile.util.DataUtil;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -64,18 +67,28 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     downloadFromServer(new HttpCallback() {
                         @Override
-                        public void success(DataBean data) {
-                            if (data == null) {
-                                Toast.makeText(MainActivity.this, "请求成功未返回数据", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            update(data);
-                            Toast.makeText(MainActivity.this, "数据已生成", Toast.LENGTH_SHORT).show();
+                        public void success(final DataBean data) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (data == null) {
+                                        Toast.makeText(MainActivity.this, "请求成功未返回数据", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    update(data);
+                                    Toast.makeText(MainActivity.this, "数据已生成", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
 
                         @Override
                         public void fail() {
-                            Toast.makeText(MainActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     });
                 }
@@ -99,7 +112,16 @@ public class MainActivity extends AppCompatActivity {
     //启用新数据
     private void update(DataBean data) {
         if (data == null) return;
+        //补齐数据
+        data.setWifiMAC(SimulateData.getRandomProp("MAC"));
+//        result.setBoard("msm8916");
+//        result.setManufacture(data.get("brand"));
+//        result.setId("KTU84P");
+//        result.setDevice("hwG750-T01");
+//        result.setSerial("aee5060e");
+        //保存
         DataUtil.saveDataToFile(JSON.toJSONString(data));
+        //界面展示
         ((TextView) findViewById(R.id.tv)).setText(JSON.toJSONString(data));
 
         //杀进程并清除应用数据
@@ -107,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         execCommand(targetPackage);
     }
 
-    //本地生成数据
+    //本地生成部分数据，要与后台请求的数据相对应
     private DataBean generateDatas() {
         DataBean result = new DataBean();
 
@@ -118,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         result.setTerm(data.get("model"));//型号
         String display = data.get("display");//分辨率
         if (!TextUtils.isEmpty(display)) {
-            result.setMetrics(display);
+            result.setDisplay(display);
         }
 
         String imei = SimulateData.genIMEI(data.get("imei"));
@@ -137,12 +159,6 @@ public class MainActivity extends AppCompatActivity {
         String api = SimulateData.randomSdkLevel();
         result.setApi(api);
         result.setOs_version(SimulateData.getSdkVersion(api));
-        result.setWifiMAC(SimulateData.getRandomProp("MAC"));
-//        result.setBoard("msm8916");
-//        result.setManufacture(data.get("brand"));
-//        result.setId("KTU84P");
-//        result.setDevice("hwG750-T01");
-//        result.setSerial("aee5060e");
         return result;
     }
 
@@ -172,23 +188,28 @@ public class MainActivity extends AppCompatActivity {
                     connection.setConnectTimeout(10000);
                     connection.setRequestMethod("GET");
                     connection.setDoInput(true);
-
+                    connection.connect();
                     int code = connection.getResponseCode();
+                    if (code >= 200 && code < 300) {
+                        InputStream inputStream = connection.getInputStream();
+                        byte[] data = new byte[1024];
+                        StringBuffer sb = new StringBuffer();
+                        while (inputStream.read(data) != -1) {
+                            String s = new String(data, Charset.forName("utf-8"));
+                            sb.append(s);
+                        }
+                        inputStream.close();
+                        callback.success(JSON.parseObject(sb.toString()).getJSONObject("data").toJavaObject(DataBean.class));
+                    } else {
+                        callback.fail();
+                    }
+                    connection.disconnect();
                     return code;
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Integer code) {
-                super.onPostExecute(code);
-                if (code >= 200 && code < 300) {
-                    callback.success(null);
-                } else {
                     callback.fail();
                 }
+                return 0;
             }
         }.execute();
     }
@@ -206,33 +227,53 @@ public class MainActivity extends AppCompatActivity {
         postTask = new AsyncTask<String, String, String>() {
             @Override
             protected String doInBackground(String... strings) {
+                String result = "上传异常";
                 try {
                     URL url = new URL(path);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setConnectTimeout(10000);
                     connection.setRequestMethod("POST");
-                    connection.setRequestProperty("os_version", data.getOs_version());
-                    connection.setRequestProperty("device_id", data.getDevice_id());
-                    connection.setRequestProperty("android_id", data.getAndroid_id());
-                    connection.setRequestProperty("term", data.getTerm());
-                    connection.setRequestProperty("brand", data.getBrand());
+                    connection.addRequestProperty("Content-Type", "application/json");
                     connection.setDoInput(true);
-
+                    connection.setDoOutput(true);
+                    connection.connect();
+                    OutputStream outputStream = connection.getOutputStream();
+                    HashMap<String, String> params = new HashMap<>();
+                    params.put("device_id", data.getDevice_id());
+                    params.put("android_id", data.getAndroid_id());
+                    params.put("term", data.getTerm());
+                    params.put("brand", data.getBrand());
+                    params.put("os_version", data.getOs_version());
+                    params.put("api", data.getApi());
+                    params.put("display", data.getDisplay());
+                    outputStream.write(params.toString().getBytes());
+                    outputStream.flush();
+                    outputStream.close();
                     int code = connection.getResponseCode();
                     if (code >= 200 && code < 300) {
                         InputStream inputStream = connection.getInputStream();
-
+                        byte[] data = new byte[1024];
+                        StringBuffer sb = new StringBuffer();
+                        while (inputStream.read(data) != -1) {
+                            String s = new String(data, Charset.forName("utf-8"));
+                            sb.append(s);
+                        }
+                        inputStream.close();
+                        result = "数据上传成功";
+                    } else {
+                        result = "数据上传失败";
                     }
+                    connection.disconnect();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return null;
+                return result;
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                Toast.makeText(MainActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
@@ -332,19 +373,19 @@ public class MainActivity extends AppCompatActivity {
 
         mySP.setintSharedPref("width", 480); // 宽
         mySP.setintSharedPref("height", 720); // 高
-//        mySP.setintSharedPref("DPI", 320); // dpi
-//        mySP.setfloatharedPref("density", (float) 2.0); // density
-//        mySP.setfloatharedPref("xdpi", (float) 200.123);
-//        mySP.setfloatharedPref("ydpi", (float) 211.123);
-//        mySP.setfloatharedPref("scaledDensity", (float) 2.0); // 字体缩放比例
+        mySP.setintSharedPref("DPI", 320); // dpi
+        mySP.setfloatharedPref("density", (float) 2.0); // density
+        mySP.setfloatharedPref("xdpi", (float) 200.123);
+        mySP.setfloatharedPref("ydpi", (float) 211.123);
+        mySP.setfloatharedPref("scaledDensity", (float) 2.0); // 字体缩放比例
 
 
 
  *//*
     显卡信息
      *//*
-//        mySP.setSharedPref("GLRenderer", "Adreno (TM) 111"); // GPU
-//        mySP.setSharedPref("GLVendor", "UFU");// GPU厂商
+        mySP.setSharedPref("GLRenderer", "Adreno (TM) 111"); // GPU
+        mySP.setSharedPref("GLVendor", "UFU");// GPU厂商
 
 
             *//*

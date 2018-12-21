@@ -36,7 +36,7 @@ public class Resolution {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 try {
-                    String display = DataUtil.getData().getMetrics();
+                    String display = DataUtil.getData().getDisplay();
                     if (display != null) {
                         String[] size = display.split("\\*");
                         if (size.length == 2) {
@@ -65,7 +65,7 @@ public class Resolution {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 try {
-                    String display = DataUtil.getData().getMetrics();
+                    String display = DataUtil.getData().getDisplay();
                     if (display != null) {
                         String[] size = display.split("\\*");
                         if (size.length == 2) {
@@ -93,7 +93,7 @@ public class Resolution {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 try {
-                    String display = DataUtil.getData().getMetrics();
+                    String display = DataUtil.getData().getDisplay();
                     if (display != null) {
                         String[] size = display.split("\\*");
                         if (size.length == 2) {
@@ -122,7 +122,7 @@ public class Resolution {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 try {
-                    String display = DataUtil.getData().getMetrics();
+                    String display = DataUtil.getData().getDisplay();
                     if (display != null) {
                         String[] size = display.split("\\*");
                         if (size.length == 2) {
@@ -144,7 +144,7 @@ public class Resolution {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 try {
-                    String display = DataUtil.getData().getMetrics();
+                    String display = DataUtil.getData().getDisplay();
                     if (display != null) {
                         String[] size = display.split("\\*");
                         if (size.length == 2) {

@@ -8,7 +8,7 @@ public class DataBean {
     private String term;//机型
     private String brand;//品牌
 
-    private String metrics;//分辨率 1080*1920
+    private String display;//分辨率 1080*1920
     private String wifiMAC;
     private String board;
     private String manufacture;
@@ -59,12 +59,12 @@ public class DataBean {
         this.brand = brand;
     }
 
-    public String getMetrics() {
-        return metrics;
+    public String getDisplay() {
+        return display;
     }
 
-    public void setMetrics(String metrics) {
-        this.metrics = metrics;
+    public void setDisplay(String metrics) {
+        this.display = metrics;
     }
 
     public String getApi() {

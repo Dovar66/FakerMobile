@@ -92,6 +92,9 @@ public class XBuild {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 String methodName = param.method.getName();
+                if (param.args.length > 1) {
+                    XposedBridge.log("SystemProperties.get(" + param.args[0] + "," + param.args[1] + ")");
+                }
                 if (methodName.startsWith("get")) {
                     setBuildData();
                     super.beforeHookedMethod(param);
@@ -103,6 +106,9 @@ public class XBuild {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 String methodName = param.method.getName();
+                if (param.args.length > 0) {
+                    XposedBridge.log("SystemProperties.get(" + param.args[0] + ")");
+                }
                 if (methodName.startsWith("get")) {
                     setBuildData();
                     super.beforeHookedMethod(param);
@@ -112,7 +118,6 @@ public class XBuild {
     }
 
     private static void setBuildData() {
-        XposedBridge.log("getDeviceInfo_string");
         try {
             XposedHelpers.setStaticObjectField(Build.class, "MODEL", DataUtil.getData().getTerm());
             XposedHelpers.findField(Build.class, "BOARD").set(null, DataUtil.getData().getBoard());
