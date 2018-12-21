@@ -45,7 +45,7 @@ public class RootCloak implements IXposedHookLoadPackage {
     private Set<String> libnameSet;
     private boolean debugPref;
     private boolean isRootCloakLoadingPref = false;
-    private String listApp;
+    private String listApp="";//添加需要隐藏的包名
 
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         loadPrefs(); // 加载首选项为任何应用程序。 这样我们可以确定它是否匹配应用程序列表以隐藏根。
@@ -619,7 +619,6 @@ public class RootCloak implements IXposedHookLoadPackage {
             commandSet.isEmpty();
             libnameSet.isEmpty();
 
-            listApp = SharedPref.getXValue("HideRootPackge");
             if (listApp != null) {
                 appSet = new HashSet<String>(getAppset(listApp));
             } else {

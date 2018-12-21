@@ -1,4 +1,4 @@
-package com.dovar.fakermobile.util;
+package com.dovar.fakermobile.fms;
 
 import android.location.Criteria;
 import android.location.GpsStatus;
@@ -16,7 +16,10 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
-public class GPShook {
+/**
+ * 定位相关
+ */
+public class GPS {
     public static void HookAndChange(ClassLoader classLoader, final double latitude, final double longtitude) {
 
         // 基站信息设置为Null

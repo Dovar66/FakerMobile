@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.dovar.fms"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -19,17 +19,16 @@ android {
 
     //设置打包生成的apk文件的名称
     android.applicationVariants.all { variant ->
-        for (int i = 0; i < variant.outputs.size(); i++) {
+        variant.outputs.all { output ->
             def date = new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+08"))
-            variant.outputs.get(i).outputFile = new File("fms_${date}.apk")
+            outputFileName = "fms_${date}.apk"
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26+'
-    testCompile 'junit:junit:4.12'
-    compile 'com.alibaba:fastjson:1.2.46'
-    compile 'com.alibaba:fastjson:1.1.68.android'
-    provided files('libs/XposedBridgeApi-54.jar')
+    implementation 'com.android.support:appcompat-v7:27+'
+    implementation 'com.alibaba:fastjson:1.2.46'
+    implementation 'com.alibaba:fastjson:1.1.68.android'
+    compileOnly files('libs/XposedBridgeApi-54.jar')
 }

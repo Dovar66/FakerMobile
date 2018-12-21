@@ -4,7 +4,8 @@ package com.dovar.fakermobile.util;
 import android.os.Environment;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.dovar.fakermobile.data.DataBean;
+import com.dovar.fakermobile.data.SimulateData;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,18 +18,22 @@ import de.robv.android.xposed.XposedBridge;
 /**
  * Created by heweizong on 2018/3/21.
  */
+public class DataUtil {
+    public static DataBean data;
+    private static final String fileName = "fmsDevice.txt";
+    private static final String finalFolder = "xx";
 
-public class PoseHelper008 {
-    public static JSONObject valueMap = new JSONObject();
-    public static String finalFolder = "xx";
-    public static final String fileName = "xposeDevice.txt";
-
-    static {
-        valueMap.put("connect_mode", "1");
+    public static void init() {
+        data = JSON.parseObject(getDataFromFile()).toJavaObject(DataBean.class);
+        data.setNetworkInfo(SimulateData.genNetworkInfo());
+        XposedBridge.log(JSON.toJSONString(data.getNetworkInfo()));
     }
 
-    public static void initPoseHelper() {
-        valueMap = JSON.parseObject(getDataFromFile());
+    public static DataBean getData() {
+        if (data == null) {
+            init();
+        }
+        return data;
     }
 
     public static void saveDataToFile(String content) {
@@ -49,7 +54,7 @@ public class PoseHelper008 {
         }
     }
 
-    public static String getDataFromFile() {
+    private static String getDataFromFile() {
         File mFile = new File(Environment.getExternalStorageDirectory(), finalFolder);
         if (!mFile.exists()) {
             mFile.mkdir();
@@ -71,8 +76,6 @@ public class PoseHelper008 {
                 mE.printStackTrace();
             }
         }
-
-        XposedBridge.log("getDataFromFile: " + content);
         return content.trim();
     }
 }
