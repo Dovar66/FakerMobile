@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String url = "http://";//刷留存时需要使用的上传与下载数据的接口地址，POST用于上传，GET用于下载，请自行提供
 
-    public static String targetPackage = "com.dovar.testxp";
+    public static String targetPackage = "com.dovar.testxp";//目标应用的包名，只会hook该应用
 
 
     @Override
