@@ -21,8 +21,7 @@
 
 你可以对本项目中Xposed相关逻辑进行修改，但一定要记住：要想让新的假数据生效，必须在设置数据后清除目标应用的所有数据，因为友盟会保存用户的唯一识别码在应用数据中。
 
-        //杀进程并清除应用数据
-        killProcess(targetPackage);
-        execCommand(targetPackage);
+![](./assets/15453685224513.png)
+
 
 

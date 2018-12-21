@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         if (data == null) return;
         DataUtil.saveDataToFile(JSON.toJSONString(data));
         ((TextView) findViewById(R.id.tv)).setText(JSON.toJSONString(data));
+
+        //杀进程并清除应用数据
         killProcess(targetPackage);
         execCommand(targetPackage);
     }
