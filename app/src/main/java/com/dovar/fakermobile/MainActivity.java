@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dovar.fakermobile.data.DataBean;
 import com.dovar.fakermobile.data.SimulateData;
 import com.dovar.fakermobile.util.DataUtil;
@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_imei;//用于手动修改IMEI和androidId
     private EditText et_android_id;
 
-    private String url = "http://";//刷留存时需要使用的上传与下载数据的接口地址，POST用于上传，GET用于下载，请自行提供
+    private String url = "http://192.168.31.105/api/device";//刷留存时需要使用的上传与下载数据的接口地址，POST用于上传，GET用于下载，请自行提供
 
-    public static String targetPackage = "com.dovar.testxp";//目标应用的包名，只会hook该应用
+    public static String targetPackage = "com.touchtv.touchtv";//目标应用的包名，只会hook该应用
 
 
     @Override
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 if (radioGroup.getCheckedRadioButtonId() == R.id.rb_new) {
                     DataBean data = generateDatas();
                     update(data);
-                    uploadToServer(data);
+//                    uploadToServer(data);
                     Toast.makeText(MainActivity.this, "数据已生成", Toast.LENGTH_SHORT).show();
                 } else {
                     downloadFromServer(new HttpCallback() {
@@ -236,9 +236,10 @@ public class MainActivity extends AppCompatActivity {
                     connection.addRequestProperty("Content-Type", "application/json");
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
+                    connection.setUseCaches(false);
                     connection.connect();
                     OutputStream outputStream = connection.getOutputStream();
-                    HashMap<String, String> params = new HashMap<>();
+                    JSONObject params=new JSONObject();
                     params.put("device_id", data.getDevice_id());
                     params.put("android_id", data.getAndroid_id());
                     params.put("term", data.getTerm());
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                     params.put("os_version", data.getOs_version());
                     params.put("api", data.getApi());
                     params.put("display", data.getDisplay());
-                    outputStream.write(params.toString().getBytes());
+                    outputStream.write(params.toJSONString().getBytes());
                     outputStream.flush();
                     outputStream.close();
                     int code = connection.getResponseCode();

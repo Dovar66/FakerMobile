@@ -7,8 +7,8 @@ public class DataBean {
     private String os_version;//AndroidVersion
     private String term;//机型
     private String brand;//品牌
-
     private String display;//分辨率 1080*1920
+
     private String wifiMAC;
     private String board;
     private String manufacture;
