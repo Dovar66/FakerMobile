@@ -23,8 +23,8 @@ public class Phone {
         hookIMEI(loadPackageParam);
         hookAndroidId(loadPackageParam);
         Wifi(loadPackageParam);
-        Telephony(loadPackageParam);
         hookNetworkType(loadPackageParam);//网络状态
+        Telephony(loadPackageParam);
 //        Bluetooth(loadPackageParam);
     }
 
@@ -134,26 +134,32 @@ public class Phone {
     }
 
     private static void Telephony(XC_LoadPackage.LoadPackageParam loadPkgParam) {
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimSerialNumber", DataUtil.getData().getNetworkInfo().getSimSerial());
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getLine1Number", DataUtil.getData().getNetworkInfo().getPhoneNumber());
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getNetworkOperator", DataUtil.getData().getNetworkInfo().getNetworkOperator()); // 网络运营商类型
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getNetworkOperatorName", DataUtil.getData().getNetworkInfo().getNetworkOperatorName()); // 网络类型名
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimOperator", DataUtil.getData().getNetworkInfo().getNetworkOperator()); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
+        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimOperatorName", DataUtil.getData().getNetworkInfo().getNetworkOperatorName()); // 运营商名字 中国联通
         //IMSI
         XposedHelpers.findAndHookMethod(TelephonyManager.class.getName(), loadPkgParam.classLoader, "getSubscriberId", new XC_MethodReplacement(XCallback.PRIORITY_LOWEST) {
             @Override
             protected Object replaceHookedMethod(MethodHookParam mMethodHookParam) throws Throwable {
                 XposedBridge.log("TelephonyManager_getSubscriberId");
-                return DataUtil.getData().getNetworkInfo();
+                return DataUtil.getData().getNetworkInfo().getImsi();
             }
         });
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimSerialNumber", DataUtil.getData().getNetworkInfo().getSimSerial());
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getLine1Number", DataUtil.getData().getNetworkInfo().getPhoneNumber());
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getNetworkOperator", DataUtil.getData().getNetworkInfo().getNetworkOperator()); // 网络运营商类型
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getNetworkOperatorName", DataUtil.getData().getNetworkInfo().getNetworkOperatorName()); // 网络类型名
-//        // FIXME: 2018/3/20
+        //检测是否有ICC卡
+        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "hasIccCard", new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                XposedBridge.log("hasIccCard");
+                return true;
+            }
+        });
+        // FIXME: 2018/3/20
 //        HookTelephony(TelePhone, loadPkgParam, "getDeviceSoftwareVersion", SharedPref.getXValue("deviceversion"));// 返系统版本
 //        HookTelephony(TelePhone, loadPkgParam, "getNetworkCountryIso", SharedPref.getXValue("gjISO")); // 国家iso代码
 //        HookTelephony(TelePhone, loadPkgParam, "getSimCountryIso", SharedPref.getXValue("CountryCode")); // 手机卡国家
-
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimOperator", DataUtil.getData().getNetworkInfo().getNetworkOperator()); // 运营商  (mobile country code + mobile network code)(5 or 6 decimal digits)
-        HookTelephony(TelephonyManager.class.getName(), loadPkgParam, "getSimOperatorName", DataUtil.getData().getNetworkInfo().getNetworkOperatorName()); // 运营商名字 中国联通
-
 //        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "getPhoneType", new XC_MethodHook() {
 //
 //            @Override
@@ -174,14 +180,6 @@ public class Phone {
 //                XposedBridge.log("getSimState");
 //            }
 //        });
-        //检测是否有ICC卡
-        XposedHelpers.findAndHookMethod("android.telephony.TelephonyManager", loadPkgParam.classLoader, "hasIccCard", new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log("hasIccCard");
-                return true;
-            }
-        });
     }
 
     private static void hookIMEI(XC_LoadPackage.LoadPackageParam loadPkgParam) {
@@ -398,7 +396,7 @@ public class Phone {
 
             });
         } catch (Exception e) {
-
+            XposedBridge.log("ERROR:" + funcName);
         }
     }
 

@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_imei;//用于手动修改IMEI和androidId
     private EditText et_android_id;
 
-    private String url = "http://192.168.31.105/api/device";//刷留存时需要使用的上传与下载数据的接口地址，POST用于上传，GET用于下载，请自行提供
+    private String url = "http://";//刷留存时需要使用的上传与下载数据的接口地址，POST用于上传，GET用于下载，请自行提供
 
-    public static String targetPackage = "com.touchtv.touchtv";//目标应用的包名，只会hook该应用
+    public static String targetPackage = "com.dovar.testxp";//目标应用的包名，只会hook该应用
 
 
     @Override
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 if (radioGroup.getCheckedRadioButtonId() == R.id.rb_new) {
                     DataBean data = generateDatas();
                     update(data);
-//                    uploadToServer(data);
+                    uploadToServer(data);
                     Toast.makeText(MainActivity.this, "数据已生成", Toast.LENGTH_SHORT).show();
                 } else {
                     downloadFromServer(new HttpCallback() {
@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         int index = new Random().nextInt(SimulateData.imeiStore.size());
         HashMap<String, String> data = SimulateData.imeiStore.get(index);
         result.setBrand(data.get("brand"));//品牌
+        result.setManufacture(data.get("brand"));//制造商
         result.setTerm(data.get("model"));//型号
         String display = data.get("display");//分辨率
         if (!TextUtils.isEmpty(display)) {

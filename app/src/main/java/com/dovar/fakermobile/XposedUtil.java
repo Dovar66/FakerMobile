@@ -40,8 +40,8 @@ public class XposedUtil implements IXposedHookLoadPackage {
 //            initPackageManager(mLoadPackageParam);//隐藏包，防止反hook
 
             XBuild.hook(mLoadPackageParam);
-            Phone.hook(mLoadPackageParam);
             Resolution.hook(mLoadPackageParam);
+            Phone.hook(mLoadPackageParam);
 //            GPS.HookAndChange(mLoadPackageParam.classLoader, SharedPref.getfloatXValue("lat"),SharedPref.getfloatXValue("log"));
         }
 
