@@ -10,10 +10,8 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
- * Created by Administrator on 2017/4/17 0017.
  * Build相关
  */
-
 public class XBuild {
 
     public static void hook(XC_LoadPackage.LoadPackageParam loadPkgParam) {
